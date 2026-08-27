@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdBez Systems — Institutional Media Buying Infrastructure</title>
+    <!-- Tailwind CSS 4 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #040711;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(14, 116, 144, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 0% 100%, rgba(79, 70, 229, 0.05) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+        .brand-font { font-family: 'Space Grotesk', sans-serif; }
+        
+        /* Premium Minimalist Card Framework */
+        .asset-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.4) 0%, rgba(9, 15, 30, 0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .asset-card:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(6, 182, 212, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Active State Filters */
+        .filter-tab.active {
+            background: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+            border-left-color: #06b6d4;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #040711; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+    </style>
+</head>
+<body class="text-slate-300 min-h-screen flex flex-col antialiased">
+
+    <!-- PLATFORM HEADER INTERFACE -->
+    <header class="sticky top-0 z-40 w-full bg-[#040711]/80 backdrop-blur-md border-b border-slate-900/60">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            
+            <!-- AdBez Identity Base -->
+            <div class="flex items-center space-x-3.5 cursor-pointer">
+                <div class="h-9 w-9 bg-white rounded flex items-center justify-center shadow-lg shadow-white/5">
+                    <i class="fa-solid fa-square-sliders text-slate-950 text-md"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-bold tracking-tight text-white brand-font">AdBez</span>
+                    <span class="text-[9px] block text-slate-500 font-bold tracking-[0.3em] uppercase -mt-0.5">ADVERTISING</span>
+                </div>
+            </div>
+
+            <!-- Advanced Live Search Control -->
+            <div class="hidden md:flex flex-1 max-w-md mx-12">
+                <div class="relative w-full">
+                    <input type="text" id="asset-search" onkeyup="executeLiveSearch()" placeholder="Search assets (e.g., 'Uncapped', 'US Ad Account')..." class="w-full bg-slate-950 border border-slate-800/80 rounded-xl py-2.5 pl-10 pr-4 text-xs text-slate-200 focus:outline-none focus:border-slate-700 focus:ring-1 focus:ring-cyan-500/20 transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-600 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Financial & Control Station -->
+            <div class="flex items-center space-x-4">
+                <!-- Liquidity Monitoring Block -->
+                <div class="flex items-center bg-slate-950 border border-slate-900 rounded-xl p-1.5 pl-3.5 shadow-inner">
+                    <div class="flex flex-col pr-4 border-r border-slate-900 mr-3">
+                        <span class="text-[8px] uppercase tracking-wider text-slate-500 font-bold">Wallet Cash</span>
+                        <span class="text-xs font-bold text-emerald-400 brand-font">$0.00</span>
+                    </div>
+                    <button onclick="toggleModal('funds-modal')" class="bg-white hover:bg-slate-200 text-slate-950 text-[11px] font-bold px-3 py-2 rounded-lg transition-all active:scale-95 cursor-pointer">
+                        + Top Up
+                    </button>
+                </div>
+
+                <!-- Pipeline Bucket (Cart) Trigger -->
+                <button onclick="toggleCartDrawer()" class="relative p-3 bg-slate-900/40 border border-slate-800 rounded-xl hover:bg-slate-900/80 transition-all cursor-pointer">
+                    <i class="fa-solid fa-basket-shopping text-cyan-400"></i>
+                    <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-cyan-500 text-slate-950 text-[10px] font-extrabold h-4.5 w-4.5 rounded-full flex items-center justify-center">0</span>
+                </button>
+
+                <!-- Core Authentication Interface -->
+                <button onclick="toggleModal('auth-modal')" class="hidden sm:inline-block text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer">
+                    Terminal Login
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP CONTROLLER CORE -->
+    <div class="max-w-7xl w-full mx-auto px-6 py-10 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- SIDEBAR CATEGORIZATION SYSTEM -->
+        <aside class="lg:col-span-1">
+            <div class="sticky top-28 space-y-1.5 bg-slate-950/40 p-3 rounded-2xl border border-slate-900">
+                <p class="text-[9px] font-bold tracking-widest text-slate-600 uppercase px-3 mb-2.5">Category Architecture</p>
+                <button onclick="switchCategory('all')" class="filter-tab active w-full flex items-center px-3 py-2.5 rounded-xl border-l-2 border-transparent text-left text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer">
+                    <i class="fa-solid fa-grid-2 mr-2.5 text-slate-500"></i> All Infrastructure Assets
+                </button>
+                <button onclick="switchCategory('ad-accounts')" class="filter-tab w-full flex items-center px-3 py-2.5 rounded-xl border-l-2 border-transparent text-left text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer">
+                    <i class="fa-solid fa-network-wired mr-2.5 text-slate-500"></i> Agency Ad Accounts
+                </button>
+                <button onclick="switchCategory('profiles')" class="filter-tab w-full flex items-center px-3 py-2.5 rounded-xl border-l-2 border-transparent text-left text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer">
+                    <i class="fa-solid fa-user-shield mr-2.5 text-slate-500"></i> Trust Verified Profiles
+                </button>
+                <button onclick="switchCategory('bm-standard')" class="filter-tab w-full flex items-center px-3 py-2.5 rounded-xl border-l-2 border-transparent text-left text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer">
+                    <i class="fa-solid fa-briefcase mr-2.5 text-slate-500"></i> Business Managers
+                </button>
+                <button onclick="switchCategory('bm-verified')" class="filter-tab w-full flex items-center px-3 py-2.5 rounded-xl border-l-2 border-transparent text-left text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer">
+                    <i class="fa-solid fa-shield-check mr-2.5 text-slate-500"></i> Verified Corporate BMs
+                </button>
+                <button onclick="switchCategory('pages')" class="filter-tab w-full flex items-center px-3 py-2.5 rounded-xl border-l-2 border-transparent text-left text-xs font-medium text-slate-400 hover:text-white transition-all cursor-pointer">
+                    <i class="fa-solid fa-book-bookmark mr-2.5 text-slate-500"></i> Specialized Niche Pages
+                </button>
+            </div>
+        </aside>
+
+        <!-- GRID INTERFACE MARKET HUB -->
+        <main class="lg:col-span-3 space-y-12">
+            
+            <!-- TYPE 1: AGENCY AD ACCOUNTS -->
+            <div class="category-block" data-category="ad-accounts">
+                <div class="border-b border-slate-900 pb-3 mb-6 flex justify-between items-center">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 brand-font">1. Multi-Platform Agency Ad Accounts</h3>
+                    <span class="text-[10px] text-slate-600">Automated Proxy Routing</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- US Ad Account -->
+                    <div class="asset-card rounded-2xl p-5 flex flex-col justify-between asset-search-node" data-search="us ad account agency meta">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[9px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/15 px-2 py-0.5 rounded">META PLATFORM</span>
+                                <span class="text-[10px] text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Active</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white tracking-wide">US Ad Account</h4>
+                            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Trusted US routing infrastructure. Configured explicitly for rapid e-commerce scaling limits.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-6 pt-3.5 border-t border-slate-900/60">
+                            <span class="text-md font-bold text-white brand-font">$25</span>
+                            <button onclick="addToPipeline('US Ad Account', 25, this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium px-4 py-2 rounded-lg border border-slate-800 transition-all cursor-pointer">Deploy Asset</button>
+                        </div>
+                    </div>
+                    <!-- VND Ad Account -->
+                    <div class="asset-card rounded-2xl p-5 flex flex-col justify-between asset-search-node" data-search="vnd ad account agency meta">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[9px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/15 px-2 py-0.5 rounded">META PLATFORM</span>
+                                <span class="text-[10px] text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Active</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white tracking-wide">VND Ad Account</h4>
+                            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">High compliance threshold history metrics. Unlocks seamless clearance vectors on ad reviews.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-6 pt-3.5 border-t border-slate-900/60">
+                            <span class="text-md font-bold text-white brand-font">$20</span>
+                            <button onclick="addToPipeline('VND Ad Account', 20, this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium px-4 py-2 rounded-lg border border-slate-800 transition-all cursor-pointer">Deploy Asset</button>
+                        </div>
+                    </div>
+                    <!-- Hong Kong Ad Account (Credit Line) -->
+                    <div class="asset-card rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 md:col-span-2 border border-cyan-950/60 bg-cyan-950/5 asset-search-node" data-search="hong kong ad account credit line global premium corporate meta">
+                        <div class="max-w-xl">
+                            <div class="flex items-center space-x-2.5 mb-2">
+                                <span class="text-[9px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded">PREMIUM INFRASTRUCTURE</span>
+                                <span class="text-[9px] font-medium bg-cyan-400 text-slate-950 px-1.5 py-0.2 rounded font-bold"><i class="fa-solid fa-crown text-[8px] mr-1"></i> Credit Line Allocation</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white tracking-wide">Hong Kong Ad Account</h4>
+                            <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">Institutional billing bypass capabilities configured directly inside high expenditures channels. Absolute corporate stability asset tier.</p>
+                        </div>
+                        <div class="flex items-center justify-between md:flex-col md:items-end justify-center min-w-[110px] pt-4 md:pt-0 border-t md:border-t-0 border-slate-900">
+                            <span class="text-lg font-bold text-white brand-font mb-2">$85</span>
+                            <button onclick="addToPipeline('Hong Kong Ad Account (Credit Line)', 85, this)" class="w-full bg-white hover:bg-slate-100 text-slate-950 text-xs font-semibold px-4 py-2 rounded-lg shadow-sm text-center transition-all cursor-pointer">Acquire Asset</button>
+                        </div>
+                    </div>
+                    <!-- Google Ad Account -->
+                    <div class="asset-card rounded-2xl p-5 flex flex-col justify-between asset-search-node" data-search="google ad account search marketing dashboard">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[9px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/15 px-2 py-0.5 rounded">GOOGLE ADS</span>
+                                <span class="text-[10px] text-slate-500"><i class="fa-solid fa-bolt text-emerald-400 mr-1"></i> Verified Console</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white tracking-wide">Google Ad Account</h4>
+                            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Aged network configurations setup. Automatically balances security filters to run scale operations.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-6 pt-3.5 border-t border-slate-900/60">
+                            <span class="text-md font-bold text-white brand-font">$45</span>
+                            <button onclick="addToPipeline('Google Ad Account', 45, this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium px-4 py-2 rounded-lg border border-slate-800 transition-all cursor-pointer">Deploy Asset</button>
+                        </div>
+                    </div>
+                    <!-- TikTok Ad Account -->
+                    <div class="asset-card rounded-2xl p-5 flex flex-col justify-between asset-search-node" data-search="tiktok ad account short video asset media">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[9px] font-semibold bg-pink-500/10 text-pink-400 border border-pink-500/15 px-2 py-0.5 rounded">TIKTOK GLOBAL</span>
+                                <span class="text-[10px] text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Instock</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white tracking-wide">TikTok Ad Account</h4>
+                            <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">Global geolocation targeting matrix metrics cleanly operationalized. Unrestricted deployment pipeline.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-6 pt-3.5 border-t border-slate-900/60">
+                            <span class="text-md font-bold text-white brand-font">$40</span>
+                            <button onclick="addToPipeline('TikTok Ad Account', 40, this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium px-4 py-2 rounded-lg border border-slate-800 transition-all cursor-pointer">Deploy Asset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE 2: FB PROFILES -->
+            <div class="category-block" data-category="profiles">
+                <div class="border-b border-slate-900 pb-3 mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 brand-font">2. High-Trust Identity Re-instated Profiles</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="asset-card rounded-xl p-4 flex items-center justify-between asset-search-node" data-search="eu fb profile facebook identity">
+                        <div><h5 class="text-xs font-bold text-white tracking-wide">EU FB Profile</h5><p class="text-[10px] text-slate-500">European Geo Routing Architecture</p></div>
+                        <div class="flex items-center space-x-4"><span class="text-xs font-bold text-white brand-font">$15</span>
+                        <button onclick="addToPipeline('EU FB Profile', 15, this)" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-cyan-400 rounded-lg cursor-pointer"><i class="fa-solid fa-plus text-xs"></i></button></div>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 flex items-center justify-between asset-search-node" data-search="standard profile facebook cookies trust">
+                        <div><h5 class="text-xs font-bold text-white tracking-wide">Standard Profile</h5><p class="text-[10px] text-slate-500">Warm Pre-Cookied Security Files</p></div>
+                        <div class="flex items-center space-x-4"><span class="text-xs font-bold text-white brand-font">$15</span>
+                        <button onclick="addToPipeline('Standard Profile', 15, this)" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-cyan-400 rounded-lg cursor-pointer"><i class="fa-solid fa-plus text-xs"></i></button></div>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 flex items-center justify-between border-l-2 border-cyan-400 asset-search-node" data-search="hard to die fb profile facebook high compliance resistance">
+                        <div><h5 class="text-xs font-bold text-cyan-400 tracking-wide">Hard To Die FB Profile</h5><p class="text-[10px] text-slate-500">Identity Re-instated Compliance Check Proof</p></div>
+                        <div class="flex items-center space-x-4"><span class="text-xs font-bold text-white brand-font">$25</span>
+                        <button onclick="addToPipeline('Hard To Die FB Profile', 25, this)" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-cyan-400 rounded-lg cursor-pointer"><i class="fa-solid fa-plus text-xs"></i></button></div>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 flex items-center justify-between asset-search-node" data-search="india verified profile facebook documentation kyc">
+                        <div><h5 class="text-xs font-bold text-white tracking-wide">India Verified Profile</h5><p class="text-[10px] text-slate-500">Complete Document Verification Cleared</p></div>
+                        <div class="flex items-center space-x-4"><span class="text-xs font-bold text-white brand-font">$30</span>
+                        <button onclick="addToPipeline('India Verified Profile', 30, this)" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-cyan-400 rounded-lg cursor-pointer"><i class="fa-solid fa-plus text-xs"></i></button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE 3: BUSINESS MANAGERS -->
+            <div class="category-block" data-category="bm-standard">
+                <div class="border-b border-slate-900 pb-3 mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 brand-font">3. Standard Operating Business Managers</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="asset-card rounded-xl p-4 text-center asset-search-node" data-search="bm1 asset standard business manager">
+                        <span class="text-[8px] text-slate-500 block font-bold uppercase tracking-wider">Allocation Stack 1</span>
+                        <h5 class="text-xs font-bold text-white tracking-wide mt-1">BM1 Asset</h5>
+                        <span class="text-sm font-bold text-cyan-400 block my-2 brand-font">$10</span>
+                        <button onclick="addToPipeline('BM1', 10, this)" class="w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 rounded border border-slate-800/80 cursor-pointer">Allocate</button>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 text-center asset-search-node" data-search="bm3 asset standard business manager triple">
+                        <span class="text-[8px] text-slate-500 block font-bold uppercase tracking-wider">Allocation Stack 3</span>
+                        <h5 class="text-xs font-bold text-white tracking-wide mt-1">BM3 Asset</h5>
+                        <span class="text-sm font-bold text-cyan-400 block my-2 brand-font">$25</span>
+                        <button onclick="addToPipeline('BM3', 25, this)" class="w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 rounded border border-slate-800/80 cursor-pointer">Allocate</button>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 text-center asset-search-node" data-search="bm whatsapp business api gateway official stack">
+                        <span class="text-[8px] text-slate-500 block font-bold uppercase tracking-wider">Official API Node</span>
+                        <h5 class="text-xs font-bold text-white tracking-wide mt-1">BM WhatsApp API</h5>
+                        <span class="text-sm font-bold text-cyan-400 block my-2 brand-font">$40</span>
+                        <button onclick="addToPipeline('BM WhatsApp Business API', 40, this)" class="w-full py-1.5 bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 rounded border border-slate-800/80 cursor-pointer">Allocate</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE 4: VERIFIED CORPORATE BMs -->
+            <div class="category-block" data-category="bm-verified">
+                <div class="border-b border-slate-900 pb-3 mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 brand-font">4. Corporate Verified BMs & Spend Allocations</h3>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="asset-card rounded-xl p-4 flex justify-between items-center asset-search-node" data-search="verified bm1 corporate business manager kyc documentation">
+                        <div><h6 class="text-xs font-bold text-white tracking-wide">Verified BM1</h6><p class="text-[9px] text-slate-500">Document Registry Authenticated</p></div>
+                        <div class="flex items-center space-x-3"><span class="text-xs font-bold text-white brand-font">$30</span>
+                        <button onclick="addToPipeline('Verified BM1', 30, this)" class="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded cursor-pointer"><i class="fa-solid fa-plus text-[9px]"></i></button></div>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 flex justify-between items-center asset-search-node" data-search="verified bm3 corporate triple allocation">
+                        <div><h6 class="text-xs font-bold text-white tracking-wide">Verified BM3</h6><p class="text-[9px] text-slate-500">Triple Managed Dashboard Slots</p></div>
+                        <div class="flex items-center space-x-3"><span class="text-xs font-bold text-white brand-font">$50</span>
+                        <button onclick="addToPipeline('Verified BM3', 50, this)" class="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded cursor-pointer"><i class="fa-solid fa-plus text-[9px]"></i></button></div>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 flex justify-between items-center asset-search-node" data-search="verified bm5 enterprise infrastructure package">
+                        <div><h6 class="text-xs font-bold text-white tracking-wide">Verified BM5</h6><p class="text-[9px] text-slate-500">5 High Trust Node Deployments</p></div>
+                        <div class="flex items-center space-x-3"><span class="text-xs font-bold text-white brand-font">$200</span>
+                        <button onclick="addToPipeline('Verified BM5', 200, this)" class="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded cursor-pointer"><i class="fa-solid fa-plus text-[9px]"></i></button></div>
+                    </div>
+                    <div class="asset-card rounded-xl p-4 flex justify-between items-center asset-search-node" data-search="verified bm10 infinite global corporate core scale">
+                        <div><h6 class="text-xs font-bold text-white tracking-wide">Verified BM10</h6><p class="text-[9px] text-slate-500">Ultimate Institutional Master Core</p></div>
+                        <div class="flex items-center space-x-3"><span class="text-xs font-bold text-white brand-font">$380</span>
+                        <button onclick="addToPipeline('Verified BM10', 380, this)" class="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded cursor-pointer"><i class="fa-solid fa-plus text-[9px]"></i></button></div>
+                    </div>
+                </div>
+
+                <!-- High Volume Shares Layout -->
+                <div class="space-y-3 mt-6">
+                    <div class="asset-card rounded-2xl p-4 flex flex-col sm:flex-row justify-between sm:items-center asset-search-node" data-search="bm share 5 ad account setup 250 daily limit spend allocation">
+                        <div>
+                            <h5 class="text-xs font-bold text-white">BM Share (5 Ad Accounts Setup) <span class="ml-2 text-[9px] bg-slate-900 text-slate-400 border border-slate-800 px-2 py-0.5 rounded font-normal">$250 Daily Caps</span></h5>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Pre-routed institutional allocation nodes ready for asset synchronization.</p>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-end space-x-4 mt-3 sm:mt-0 border-t sm:border-t-0 border-slate-900 pt-2 sm:pt-0">
+                            <span class="text-sm font-bold text-white brand-font">$250</span>
+                            <button onclick="addToPipeline('BM share 5 Ad account ($250 Limit)', 250, this)" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-xs font-medium px-4 py-2 rounded-lg cursor-pointer">Allocate</button>
+                        </div>
+                    </div>
+                    
+                    <div class="asset-card rounded-2xl p-4 flex flex-col sm:flex-row justify-between sm:items-center border-l-2 border-cyan-400 bg-cyan-950/5 asset-search-node" data-search="bm share 5 ad account setup uncapped no limit spending global scale">
+                        <div>
+                            <h5 class="text-xs font-bold text-white">BM Share (5 Ad Accounts Setup) <span class="ml-2 text-[9px] bg-cyan-950 text-cyan-400 px-2 py-0.5 rounded font-bold border border-cyan-800/40">🔥 Uncapped/No Daily Limits</span></h5>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Maximum scale velocity framework. Absolute raw deployment capabilities for heavy configurations.</p>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-end space-x-4 mt-3 sm:mt-0 border-t sm:border-t-0 border-slate-900 pt-2 sm:pt-0">
+                            <span class="text-sm font-bold text-cyan-400 brand-font">$450</span>
+                            <button onclick="addToPipeline('BM share 5 ad account (No Limit)', 450, this)" class="bg-white hover:bg-slate-100 text-slate-950 text-xs font-bold px-4 py-2 rounded-lg shadow-sm cursor-pointer">Acquire Asset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TYPE 5: SPECIALIZED NICHE PAGES -->
+            <div class="category-block" data-category="pages">
+                <div class="border-b border-slate-900 pb-3 mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 brand-font">5. Pre-Warmed Niche Infrastructure Pages</h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="asset-card rounded-2xl p-4 flex items-center justify-between asset-search-node" data-search="crypto page web3 financial network tracking bypass framework">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="h-9 w-9 bg-slate-900 border border-slate-800/80 rounded-xl flex items-center justify-center text-slate-400"><i class="fa-solid fa-chart-line-up text-xs"></i></div>
+                            <div><h5 class="text-xs font-bold text-white tracking-wide">Crypto Niche Page</h5><p class="text-[10px] text-slate-500">Web3 High Compliance Velocity Asset</p></div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-white block mb-1.5 brand-font">$13</span>
+                            <button onclick="addToPipeline('Crypto Page', 13, this)" class="bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 px-3 py-1.5 rounded-lg border border-slate-800 cursor-pointer">Add</button>
+                        </div>
+                    </div>
+                    <div class="asset-card rounded-2xl p-4 flex items-center justify-between asset-search-node" data-search="gambling page igaming compliance framework structure">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="h-9 w-9 bg-slate-900 border border-slate-800/80 rounded-xl flex items-center justify-center text-slate-400"><i class="fa-solid fa-cards text-xs"></i></div>
+                            <div><h5 class="text-xs font-bold text-white tracking-wide">Gambling Niche Page</h5><p class="text-[10px] text-slate-500">iGaming Policy Shield Configured Structure</p></div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-white block mb-1.5 brand-font">$13</span>
+                            <button onclick="addToPipeline('Gambling Page', 13, this)" class="bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 px-3 py-1.5 rounded-lg border border-slate-800 cursor-pointer">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- APP INFRASTRUCTURE DRAWER (CART DRAWER OVERLAY) -->
+    <div id="cart-drawer" class="fixed inset-y-0 right-0 max-w-sm w-full bg-[#050814] border-l border-slate-900/80 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b border-slate-900 flex items-center justify-between bg-slate-950/30">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center brand-font"><i class="fa-solid fa-network-wired text-slate-500 mr-2.5"></i> Operational Procurement Pipeline</h4>
+            <button onclick="toggleCartDrawer()" class="text-slate-500 hover:text-white p-2 cursor-pointer"><i class="fa-solid fa-xmark text-xs"></i></button>
+        </div>
+        
+        <div id="cart-items-injector" class="flex-1 overflow-y-auto p-4 space-y-2.5">
+            <p id="empty-cart-message" class="text-center text-xs text-slate-600 py-16">Pipeline holds zero scheduled structural operations.</p>
+        </div>
+
+        <div class="p-4 border-t border-slate-900 bg-slate-950/60">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs text-slate-500">Net Operational Cost:</span>
+                <span id="cart-aggregate-total" class="text-base font-bold text-white brand-font">$0.00</span>
+            </div>
+            <button onclick="alert('Order successfully routed directly via verified wallet processing pipelines.')" class="w-full py-2.5 bg-white hover:bg-slate-100 text-slate-950 font-semibold rounded-lg text-xs transition-transform active:scale-98 shadow-md cursor-pointer">
+                Initialize Provisioning Core
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP SYSTEM 1: WALLET CASH ADDER -->
+    <div id="funds-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#070b16] border border-slate-900 rounded-2xl w-full max-w-md overflow-hidden relative p-6 shadow-2xl">
+            <button onclick="toggleModal('funds-modal')" class="absolute top-4 right-4 text-slate-500 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            <h4 class="text-sm font-bold text-white mb-1 brand-font">Refuel Allocation Wallet</h4>
+            <p class="text-xs text-slate-500 mb-5">Inject working balance arrays directly into your private secure enterprise server console.</p>
+            
+            <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Funding Metrics (USD)</label>
+            <input type="number" placeholder="$500" class="w-full bg-slate-950 border border-slate-900 rounded-xl p-3 text-white font-semibold text-xs focus:outline-none focus:border-slate-700 mb-4">
+            
+            <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3 mb-5 text-[11px] text-slate-400 leading-relaxed">
+                <i class="fa-solid fa-circle-exclamation mr-1 text-slate-500"></i> Top-ups tracking equal to or scaling past a baseline value of $500 secure an automatic 5% instant processing liquidity modifier.
+            </div>
+
+            <button onclick="toggleModal('funds-modal')" class="w-full py-2.5 bg-white hover:bg-slate-200 text-slate-950 font-bold rounded-lg text-xs transition-all cursor-pointer">Create Payment Invoice</button>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP SYSTEM 2: SECURE AUTH TERMINAL -->
+    <div id="auth-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#070b16] border border-slate-900 rounded-2xl w-full max-w-sm overflow-hidden relative shadow-2xl">
+            <button onclick="toggleModal('auth-modal')" class="absolute top-4 right-4 text-slate-500 hover:text-white z-10 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="flex border-b border-slate-900 bg-slate-950/40">
+                <button class="flex-1 py-3 text-center text-xs font-bold text-white border-b border-white">Access Protocol</button>
+                <button class="flex-1 py-3 text-center text-xs font-medium text-slate-500 hover:text-slate-400">Sync Nodes</button>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1">Secure Control Email</label>
+                    <input type="email" placeholder="operations@adbez.com" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-slate-700">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1">Platform Credentials Token</label>
+                    <input type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-slate-700">
+                </div>
+                <button onclick="toggleModal('auth-modal')" class="w-full py-2.5 mt-1 bg-white hover:bg-slate-100 text-slate-950 font-semibold rounded-lg text-xs transition-all cursor-pointer">Verify Security Token</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTOMATED DATA FRAMEWORK ENGINE (JAVASCRIPT) -->
+    <script>
+        let infrastructurePipeline = [];
+
+        function toggleCartDrawer() {
+            document.getElementById('cart-drawer').classList.toggle('translate-x-full');
+        }
+
+        function toggleModal(id) {
+            document.getElementById(id).classList.toggle('hidden');
+        }
+
+        // CATEGORY SWITCHING ROUTINE CORE (UX LINK LAYERS)
+        function switchCategory(targetCategory) {
+            // Manage Active States Tab Highlights
+            document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const blocks = document.querySelectorAll('.category-block');
+            blocks.forEach(block => {
+                if(targetCategory === 'all' || block.getAttribute('data-category') === targetCategory) {
+                    block.style.display = 'block';
+                } else {
+                    block.style.display = 'none';
+                }
+            });
+        }
+
+        // REAL-TIME MATRIX SEARCH DEPLOYMENT ENGINE (SEARCH UX FEATURE)
+        function executeLiveSearch() {
+            const query = document.getElementById('asset-search').value.toLowerCase().trim();
+            const matchingNodes = document.querySelectorAll('.asset-search-node');
+            const sections = document.querySelectorAll('.category-block');
+
+            matchingNodes.forEach(node => {
+                const criteria = node.getAttribute('data-search');
+                if(criteria.includes(query)) {
+                    node.style.display = 'flex';
+                } else {
+                    node.style.display = 'none';
+                }
+            });
+
+            sections.forEach(sec => {
+                const activeChildren = sec.querySelectorAll('.asset-search-node[style="display: flex;"]');
+                const pristineChildren = sec.querySelectorAll('.asset-search-node:not([style*="display: none"])');
+                if(activeChildren.length === 0 && pristineChildren.length === 0 && query !== '') {
+                    sec.style.display = 'none';
+                } else {
+                    sec.style.display = 'block';
+                }
+            });
+        }
+
+        function addToPipeline(title, price, elementRef) {
+            const existingMatch = infrastructurePipeline.find(item => item.name === title);
+            if(existingMatch) {
+                existingMatch.quantity += 1;
+            } else {
+                infrastructurePipeline.push({ name: title, price: price, quantity: 1 });
+            }
+
+            // Visual Notification Interaction Flow
+            const normalText = elementRef.innerText;
+            elementRef.innerText = "Provisioned ✓";
+            elementRef.style.color = "#22c55e";
+            elementRef.style.borderColor = "#22c55e";
+
+            setTimeout(() => {
+                elementRef.innerText = normalText;
+                elementRef.style.color = "";
+                elementRef.style.borderColor = "";
+            }, 600);
+
+            refreshPipelineEngine();
+        }
+
+        function dropFromPipeline(title) {
+            infrastructurePipeline = infrastructurePipeline.filter(item => item.name !== title);
+            refreshPipelineEngine();
+        }
+
+        function refreshPipelineEngine() {
+            const rowInjector = document.getElementById('cart-items-injector');
+            const counterBadge = document.getElementById('cart-badge');
+            const totalDisplay = document.getElementById('cart-aggregate-total');
+            const fallbackNode = document.getElementById('empty-cart-message');
+
+            rowInjector.innerHTML = '';
+
+            if(infrastructurePipeline.length === 0) {
+                rowInjector.appendChild(fallbackNode);
+                counterBadge.innerText = '0';
+                totalDisplay.innerText = '$0.00';
+                return;
+            }
+
+            let computedCashSum = 0;
+            let computedUnitsSum = 0;
+
+            infrastructurePipeline.forEach(entry => {
+                computedCashSum += (entry.price * entry.quantity);
+                computedUnitsSum += entry.quantity;
+
+                const nodeRow = document.createElement('div');
+                nodeRow.className = 'flex items-center justify-between p-3 bg-slate-950 border border-slate-900 rounded-lg';
+                nodeRow.innerHTML = `
+                    <div class="flex-1 min-w-0 pr-3">
+                        <h6 class="text-xs font-bold text-white truncate">${entry.name}</h6>
+                        <span class="text-[9px] text-slate-500">$${entry.price} × ${entry.quantity} units</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-bold text-white brand-font">$${entry.price * entry.quantity}</span>
+                        <button onclick="dropFromPipeline('${entry.name}')" class="text-slate-600 hover:text-red-400 p-1 cursor-pointer transition-colors"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                    </div>
+                `;
+                rowInjector.appendChild(nodeRow);
+            });
+
+            counterBadge.innerText = computedUnitsSum;
+            totalDisplay.innerText = `$${computedCashSum.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
