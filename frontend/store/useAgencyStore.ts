@@ -21,7 +21,10 @@ export interface AccountApplication {
   id: string;
   platform: string;
   budgetAllocation: number;
-  timezone: string;
+  timezone?: string;
+  cost?: number;
+  depositAmount?: number;
+  feePercentage?: number;
   licenseName: string;
   status: 'Approved' | 'Pending' | 'Rejected';
   appliedDate: string;
@@ -97,7 +100,7 @@ interface AgencyStore {
   
   // Actions
   setDefaultFeePercent: (percent: number) => void;
-  applyForAccount: (platform: string, budget: number, timezone: string, license: string) => Promise<boolean>;
+  applyForAccount: (platform: string, budget: number, cost: number, depositAmount: number, license: string) => Promise<boolean>;
   submitBMShare: (platform: string, accountId: string, bmId: string) => void;
   rechargeAccount: (accountId: string, amount: number) => { success: boolean; message: string };
   transferBalance: (fromId: string, toId: string, amount: number) => { success: boolean; message: string };
@@ -210,10 +213,10 @@ export const useAgencyStore = create<AgencyStore>()(
 
       setDefaultFeePercent: (percent) => set({ defaultFeePercent: percent }),
 
-      applyForAccount: async (platform, budget, timezone, license) => {
+      applyForAccount: async (platform, budget, cost, depositAmount, license) => {
         const authUser = useAuthStore.getState().user;
         const currentBalance = authUser?.walletBalance ?? 294.90;
-        const applyFee = 50.00; // Standard refundable initial application setup credit
+        const applyFee = cost + (depositAmount * 1.05);
 
         if (currentBalance < applyFee) {
           return false;
@@ -228,7 +231,9 @@ export const useAgencyStore = create<AgencyStore>()(
           id: 'APP' + Date.now().toString().slice(-10),
           platform: platform.toUpperCase(),
           budgetAllocation: budget,
-          timezone,
+          cost,
+          depositAmount,
+          feePercentage: 5,
           licenseName: license,
           status: 'Pending',
           appliedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })

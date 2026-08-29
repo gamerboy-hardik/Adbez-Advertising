@@ -46,7 +46,8 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
 
   // Form states
   const [applyBudget, setApplyBudget] = useState('5000');
-  const [applyTimezone, setApplyTimezone] = useState('GMT-5 (Eastern / New York)');
+  const [applyCost, setApplyCost] = useState('30');
+  const [applyDeposit, setApplyDeposit] = useState('100');
   const [applyLicense, setApplyLicense] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -80,14 +81,17 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
       return;
     }
     setIsSubmitting(true);
-    const res = await applyForAccount(platform, parseFloat(applyBudget) || 5000, applyTimezone, applyLicense);
+    const cost = parseFloat(applyCost) || 30;
+    const deposit = parseFloat(applyDeposit) || 0;
+    const res = await applyForAccount(platform, parseFloat(applyBudget) || 5000, cost, deposit, applyLicense);
     setIsSubmitting(false);
     if (res) {
-      success(`Application for ${platform} account submitted successfully ($50 setup fee debited).`);
+      success(`Application for ${platform} account submitted successfully ($${(cost + deposit * 1.05).toFixed(2)} debited).`);
       setApplyLicense('');
       setActiveTab('applied-records');
     } else {
-      error(`Insufficient AdBez Wallet coins/USD ($${currentWalletBalance.toFixed(2)}). You need at least $50.00 to initiate setup.`);
+      const requiredAmount = cost + deposit * 1.05;
+      error(`Insufficient AdBez Wallet coins/USD ($${currentWalletBalance.toFixed(2)}). You need at least $${requiredAmount.toFixed(2)} to initiate setup.`);
     }
   };
 
@@ -392,7 +396,7 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                 <div className="text-xs space-y-1">
                   <p className="font-bold text-foreground">Instant Application Authorization</p>
                   <p className="text-muted-foreground leading-relaxed">
-                    Application requires an initial <b>$50.00 setup credit</b> debited from your AdBez wallet. Once approved, this credit is immediately applied toward your initial advertising spend!
+                    Application requires an upfront account cost plus an initial deposit. An agency setup fee of <b>5%</b> applies to the deposit amount. This total will be debited from your AdBez wallet.
                   </p>
                 </div>
               </div>
@@ -424,17 +428,62 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Preferred Ad Account Timezone</label>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Cost of ads account</label>
                   <select
-                    value={applyTimezone}
-                    onChange={(e) => setApplyTimezone(e.target.value)}
+                    value={applyCost}
+                    onChange={(e) => setApplyCost(e.target.value)}
                     className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-all"
                   >
-                    <option value="GMT-5 (New York / Eastern)">GMT-5 (Eastern / New York)</option>
-                    <option value="GMT-8 (Los Angeles / Pacific)">GMT-8 (Pacific / Los Angeles)</option>
-                    <option value="GMT+0 (London / UTC)">GMT+0 (London / UTC)</option>
-                    <option value="GMT+8 (Singapore / Beijing)">GMT+8 (Singapore / Asia)</option>
+                    <option value="30">$30.00</option>
+                    <option value="60">$60.00</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Percentage</label>
+                  <input
+                    type="text"
+                    value="5% Fixed"
+                    readOnly
+                    className="w-full bg-muted/30 border border-border/30 rounded-xl px-4 py-3 text-sm text-muted-foreground cursor-not-allowed focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Deposit Amount ($ USD)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={applyDeposit}
+                    onChange={(e) => setApplyDeposit(e.target.value)}
+                    placeholder="e.g. 100"
+                    className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Fee Breakdown */}
+              <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-2 text-xs font-medium">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>Account Cost:</span>
+                  <span className="text-foreground font-mono font-bold">${parseFloat(applyCost || '0').toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span>Initial Deposit:</span>
+                  <span className="text-foreground font-mono font-bold">${parseFloat(applyDeposit || '0').toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between text-amber-400">
+                  <span>Deposit Fee (5%):</span>
+                  <span className="font-mono font-bold">${(parseFloat(applyDeposit || '0') * 0.05).toFixed(2)}</span>
+                </div>
+                <div className="h-px bg-muted/50 my-1" />
+                <div className="flex items-center justify-between font-['Space_Grotesk'] text-sm font-black text-emerald-400 pt-1">
+                  <span>Total Deducted:</span>
+                  <span>${(parseFloat(applyCost || '0') + parseFloat(applyDeposit || '0') * 1.05).toFixed(2)}</span>
                 </div>
               </div>
 
@@ -445,7 +494,7 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                     {formatCurrency(currentWalletBalance)}
                   </b>
                 </div>
-                <button type="submit" disabled={isSubmitting || currentWalletBalance < 50} className="btn-primary px-8 py-3.5 text-sm font-bold shadow-sm hover:shadow-md transition-shadow shadow-primary/20 disabled:opacity-40 flex items-center gap-2">
+                <button type="submit" disabled={isSubmitting || currentWalletBalance < (parseFloat(applyCost || '0') + parseFloat(applyDeposit || '0') * 1.05)} className="btn-primary px-8 py-3.5 text-sm font-bold shadow-sm hover:shadow-md transition-shadow shadow-primary/20 disabled:opacity-40 flex items-center gap-2">
                   <Send size={16} /> Submit Application
                 </button>
               </div>
@@ -468,7 +517,7 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                     <th className="px-6 py-4 text-left">Apply ID</th>
                     <th className="px-6 py-4 text-left">License Name</th>
                     <th className="px-6 py-4 text-left">Requested Limit</th>
-                    <th className="px-6 py-4 text-left">Timezone</th>
+                    <th className="px-6 py-4 text-left">Cost / Deposit</th>
                     <th className="px-6 py-4 text-left">Date Applied</th>
                     <th className="px-6 py-4 text-left">Status</th>
                   </tr>
@@ -479,7 +528,9 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                       <td className="px-6 py-4 font-mono font-bold text-primary">{app.id}</td>
                       <td className="px-6 py-4 font-semibold text-foreground">{app.licenseName}</td>
                       <td className="px-6 py-4 text-emerald-400 font-bold">${app.budgetAllocation.toLocaleString()} / day</td>
-                      <td className="px-6 py-4 text-muted-foreground">{app.timezone}</td>
+                      <td className="px-6 py-4 text-muted-foreground">
+                        {app.cost ? `$${app.cost} / $${app.depositAmount}` : app.timezone}
+                      </td>
                       <td className="px-6 py-4 text-muted-foreground">{app.appliedDate}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full font-bold text-[10px] uppercase border ${app.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30 animate-pulse'}`}>
