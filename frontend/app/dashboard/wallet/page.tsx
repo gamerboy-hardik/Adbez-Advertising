@@ -21,7 +21,7 @@ export default function WalletHubPage() {
   const { walletFlows, addWalletDeposit } = useAgencyStore();
   const { user } = useAuthStore();
   const { success } = useToastStore();
-  const balance = user?.walletBalance ?? 294.90;
+  const balance = user?.walletBalance ?? 0;
 
   const handleSimulateDeposit = (amt: number) => {
     addWalletDeposit(amt, `Direct AdBez Coin Purchase ($${amt})`, 'AdBez Coins Direct Protocol');

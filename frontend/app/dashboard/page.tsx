@@ -12,7 +12,7 @@ import { formatCurrency } from '@/lib/utils';
 export default function DashboardOverview() {
   const { accounts, walletFlows } = useAgencyStore();
   const { user } = useAuthStore();
-  const balance = user?.walletBalance ?? 294.90;
+  const balance = user?.walletBalance ?? 0;
 
   const totalSpendLimit = (accounts || []).reduce((acc, a) => acc + (a.status === 'Active' ? a.spendLimit : 0), 0);
   const totalBalanceInAds = (accounts || []).reduce((acc, a) => acc + a.currentBalance, 0);

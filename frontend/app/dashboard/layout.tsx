@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Wallet, MonitorSmartphone, Globe, Video, Share2, Search,
@@ -24,8 +25,21 @@ const agencyNavItems = [
 
 export default function AgencyDashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuthStore() as any;
-  const balance = user?.walletBalance ?? 294.90;
+  const router = useRouter();
+  const { user, isLoading } = useAuthStore() as any;
+  const balance = user?.walletBalance ?? 0;
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground animate-pulse">Checking credentials...</div>;
+  }
+
+  if (!user) return null;
 
   return (
     <div className="flex min-h-[calc(100vh-64px)]">

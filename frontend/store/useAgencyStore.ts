@@ -215,7 +215,7 @@ export const useAgencyStore = create<AgencyStore>()(
 
       applyForAccount: async (platform, budget, cost, depositAmount, license) => {
         const authUser = useAuthStore.getState().user;
-        const currentBalance = authUser?.walletBalance ?? 294.90;
+        const currentBalance = authUser?.walletBalance ?? 0;
         const applyFee = cost + (depositAmount * 1.05);
 
         if (currentBalance < applyFee) {
@@ -286,7 +286,7 @@ export const useAgencyStore = create<AgencyStore>()(
         const totalCharged = amount + feeAmount;
 
         const authUser = useAuthStore.getState().user;
-        const balanceBefore = authUser?.walletBalance ?? 294.90;
+        const balanceBefore = authUser?.walletBalance ?? 0;
         if (balanceBefore < totalCharged) {
           return { success: false, message: `Insufficient wallet balance ($${balanceBefore.toFixed(2)}). Need $${totalCharged.toFixed(2)} including ${feePercent}% markup fee.` };
         }
@@ -377,7 +377,7 @@ export const useAgencyStore = create<AgencyStore>()(
         }
 
         const authUser = useAuthStore.getState().user;
-        const balanceBefore = authUser?.walletBalance ?? 294.90;
+        const balanceBefore = authUser?.walletBalance ?? 0;
         const balanceAfter = balanceBefore + amount;
 
         if (useAuthStore.getState().user) {
@@ -420,7 +420,7 @@ export const useAgencyStore = create<AgencyStore>()(
 
       addWalletDeposit: (amount, remarks = 'Direct AdBez Coin Top-up', method = 'AdBez Coins / Direct Support') => {
         const authUser = useAuthStore.getState().user;
-        const balanceBefore = authUser?.walletBalance ?? 294.90;
+        const balanceBefore = authUser?.walletBalance ?? 0;
         const balanceAfter = balanceBefore + amount;
 
         if (useAuthStore.getState().user) {

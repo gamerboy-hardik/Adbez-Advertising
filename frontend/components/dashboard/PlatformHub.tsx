@@ -71,7 +71,7 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
   const platformTransfers = (transfers || []).filter(a => a.platform === platform);
   const platformRefunds = (refunds || []).filter(a => a.platform === platform);
 
-  const currentWalletBalance = user?.walletBalance ?? 294.90;
+  const currentWalletBalance = user?.walletBalance ?? 0;
 
   // Handlers
   const handleApply = async (e: React.FormEvent) => {
