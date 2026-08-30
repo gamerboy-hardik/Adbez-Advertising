@@ -30,6 +30,12 @@ enum PaymentStatus {
   REFUNDED
 }
 
+enum TransactionType {
+  MARKETPLACE_PURCHASE
+  ACCOUNT_APPLICATION
+  WALLET_TOPUP
+}
+
 // ─── MODELS ──────────────────────────────────────────────────────────────────
 
 model User {
@@ -84,6 +90,8 @@ model Transaction {
   paymentStatus PaymentStatus @default(PENDING) @map("payment_status")
   paymentMethod String?       @map("payment_method") // e.g. "WALLET", "NOWPAYMENTS"
   paymentRef    String?       @map("payment_ref")    // external payment reference
+  type          TransactionType @default(MARKETPLACE_PURCHASE)
+  metadata      Json?
   notes         String?
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")

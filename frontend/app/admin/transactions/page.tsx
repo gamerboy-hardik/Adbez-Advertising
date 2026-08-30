@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useToastStore } from '@/store/toastStore';
 import { formatCurrency, formatDate, truncateId } from '@/lib/utils';
 import type { Transaction } from '@/types';
+import { useAgencyStore } from '@/store/useAgencyStore';
 
 const STATUSES = ['PENDING', 'COMPLETED', 'FLAGGED', 'REFUNDED'];
 
@@ -15,18 +16,69 @@ export default function TransactionsPage() {
   const [updating, setUpdating] = useState<string | null>(null);
   const { success, error } = useToastStore();
 
-  const load = (status?: string) => {
+  const { applications, walletFlows, depositRequests, approveDeposit } = useAgencyStore();
+
+  const load = async (status?: string) => {
     setLoading(true);
-    adminApi.listTransactions(status ? { status } : {}).then(res => {
-      if (res.success && res.data) setTransactions(res.data.transactions);
-      setLoading(false);
-    });
+    const res = await adminApi.listTransactions(status ? { status } : {});
+    
+    let combined: any[] = [];
+    if (res.success && res.data) combined = [...res.data.transactions];
+
+    // Merge in local store mock data for Admin visibility
+    const localApps = (applications || []).map(app => ({
+      id: app.id,
+      user: { email: 'Client (Local Storage)' },
+      items: [{ id: '1', adAccount: { profileName: app.platform } }],
+      totalAmount: (app.cost || 0) + ((app.depositAmount || 0) * (1 + (app.feePercentage || 5) / 100)),
+      paymentStatus: app.status === 'Approved' ? 'COMPLETED' : app.status === 'Pending' ? 'PENDING' : 'FLAGGED',
+      createdAt: app.appliedDate,
+      type: 'ACCOUNT_APPLICATION',
+    }));
+    
+    const localFlows = (walletFlows || []).map(flow => ({
+      id: flow.id,
+      user: { email: 'Client (Local Storage)' },
+      items: [],
+      totalAmount: flow.amount,
+      paymentStatus: 'COMPLETED',
+      createdAt: flow.date,
+      type: flow.type === 'Debit' ? 'FEE_DEDUCTION' : 'WALLET_TOPUP',
+    }));
+
+    const localDepositReqs = (depositRequests || []).map(req => ({
+      id: req.id,
+      user: { email: 'Client (Local Storage)' },
+      items: [{ id: '1', adAccount: { profileName: `TX Hash: ${req.transactionHash}` } }],
+      totalAmount: req.amount,
+      paymentStatus: req.status === 'Approved' ? 'COMPLETED' : req.status === 'Pending' ? 'PENDING' : 'FLAGGED',
+      createdAt: req.requestDate,
+      type: 'DEPOSIT_REQUEST',
+    }));
+
+    combined = [...combined, ...localApps, ...localFlows, ...localDepositReqs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    if (status && status !== '') {
+      combined = combined.filter(tx => tx.paymentStatus.toUpperCase() === status.toUpperCase());
+    }
+    
+    setTransactions(combined as Transaction[]);
+    setLoading(false);
   };
 
-  useEffect(() => { load(filterStatus); }, [filterStatus]);
+  useEffect(() => { load(filterStatus); }, [filterStatus, applications, walletFlows, depositRequests]);
 
   const updateStatus = async (id: string, status: string) => {
     setUpdating(id);
+    
+    // If it's a mock deposit request, use the local store action
+    if (id.startsWith('DEP_') && status === 'COMPLETED') {
+      approveDeposit(id);
+      success(`Deposit request ${id} approved and wallet credited!`);
+      setUpdating(null);
+      return;
+    }
+
     const res = await adminApi.updateTransactionStatus(id, status);
     if (res.success) {
       success(`Transaction updated to ${status}`);
@@ -68,7 +120,7 @@ export default function TransactionsPage() {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-border">
-                {['Order ID', 'User', 'Items', 'Amount', 'Status', 'Date', 'Actions'].map(h => (
+                {['Order ID', 'Type', 'User', 'Items', 'Amount', 'Status', 'Date', 'Actions'].map(h => (
                   <th key={h} className="text-left text-[9px] font-bold uppercase tracking-widest text-muted-foreground px-4 py-3 bg-muted whitespace-nowrap">
                     {h}
                   </th>
@@ -90,6 +142,9 @@ export default function TransactionsPage() {
                   <tr key={tx.id} className="border-b border-border hover:bg-primary/[0.015] transition-colors">
                     <td className="px-4 py-3.5 font-['Space_Grotesk'] text-xs font-bold text-primary whitespace-nowrap">
                       #{truncateId(tx.id)}
+                    </td>
+                    <td className="px-4 py-3.5 text-[10px] text-muted-foreground uppercase tracking-widest">
+                      {(tx as any).type ? (tx as any).type.replace('_', ' ') : 'MARKETPLACE'}
                     </td>
                     <td className="px-4 py-3.5 text-xs text-muted-foreground max-w-[140px] truncate">{tx.user?.email}</td>
                     <td className="px-4 py-3.5 text-xs text-muted-foreground">{tx.items?.length || 0}</td>
@@ -115,8 +170,8 @@ export default function TransactionsPage() {
               }
               {!loading && transactions.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-xs text-muted-foreground">
-                    No transactions found.
+                  <td colSpan={8} className="text-center py-12 text-xs text-muted-foreground">
+                    No transactions or activity found.
                   </td>
                 </tr>
               )}

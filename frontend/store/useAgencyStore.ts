@@ -88,6 +88,14 @@ export interface WalletFlowItem {
   date: string;
 }
 
+export interface WalletDepositRequest {
+  id: string;
+  amount: number;
+  transactionHash: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  requestDate: string;
+}
+
 interface AgencyStore {
   accounts: AgencyAccount[];
   applications: AccountApplication[];
@@ -96,6 +104,7 @@ interface AgencyStore {
   transfers: TransferRecord[];
   refunds: RefundRecord[];
   walletFlows: WalletFlowItem[];
+  depositRequests: WalletDepositRequest[];
   defaultFeePercent: number;
   
   // Actions
@@ -106,6 +115,8 @@ interface AgencyStore {
   transferBalance: (fromId: string, toId: string, amount: number) => { success: boolean; message: string };
   requestRefund: (accountId: string, amount: number) => { success: boolean; message: string };
   addWalletDeposit: (amount: number, remarks?: string, method?: string) => void;
+  requestDeposit: (amount: number, transactionHash: string) => void;
+  approveDeposit: (id: string) => void;
 }
 
 const INITIAL_ACCOUNTS: AgencyAccount[] = [
@@ -208,7 +219,8 @@ export const useAgencyStore = create<AgencyStore>()(
       deposits: INITIAL_DEPOSITS,
       transfers: [],
       refunds: [],
-      walletFlows: INITIAL_FLOWS,
+      walletFlows: [],
+      depositRequests: [],
       defaultFeePercent: 3.0,
 
       setDefaultFeePercent: (percent) => set({ defaultFeePercent: percent }),
@@ -441,6 +453,36 @@ export const useAgencyStore = create<AgencyStore>()(
         set(state => ({
           walletFlows: [flow, ...state.walletFlows]
         }));
+      },
+
+      requestDeposit: (amount: number, transactionHash: string) => {
+        const req: WalletDepositRequest = {
+          id: 'DEP_' + Date.now(),
+          amount,
+          transactionHash,
+          status: 'Pending',
+          requestDate: new Date().toISOString(),
+        };
+        set(state => ({
+          depositRequests: [req, ...state.depositRequests]
+        }));
+      },
+
+      approveDeposit: (id: string) => {
+        const state = get();
+        const reqIndex = state.depositRequests.findIndex(r => r.id === id);
+        if (reqIndex === -1) return;
+        const req = state.depositRequests[reqIndex];
+        if (req.status !== 'Pending') return;
+        
+        // Update request status
+        const updatedRequests = [...state.depositRequests];
+        updatedRequests[reqIndex] = { ...req, status: 'Approved' };
+        
+        set({ depositRequests: updatedRequests });
+        
+        // Use existing logic to credit the wallet
+        get().addWalletDeposit(req.amount, `Deposit approved from TX ${req.transactionHash}`, 'Admin Approval');
       }
     }),
     {
@@ -453,6 +495,7 @@ export const useAgencyStore = create<AgencyStore>()(
         transfers: state.transfers,
         refunds: state.refunds,
         walletFlows: state.walletFlows,
+        depositRequests: state.depositRequests,
         defaultFeePercent: state.defaultFeePercent,
       }),
     }

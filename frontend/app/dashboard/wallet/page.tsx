@@ -17,16 +17,23 @@ export default function WalletHubPage() {
   const [payLinkAmount, setPayLinkAmount] = useState('1000');
   const [payLinkNote, setPayLinkNote] = useState('AdBez Media Spend Allocation #2026-Q3');
   const [generatedLink, setGeneratedLink] = useState('');
+  const [txHash, setTxHash] = useState('');
 
-  const { walletFlows, addWalletDeposit } = useAgencyStore();
+  const { walletFlows, requestDeposit } = useAgencyStore();
   const { user } = useAuthStore();
-  const { success } = useToastStore();
+  const { success, error } = useToastStore();
   const balance = user?.walletBalance ?? 0;
 
-  const handleSimulateDeposit = (amt: number) => {
-    addWalletDeposit(amt, `Direct AdBez Coin Purchase ($${amt})`, 'AdBez Coins Direct Protocol');
-    success(`Successfully added $${amt} AdBez Coins to your wallet matrix!`);
-    setTab('wallet-flow');
+  const handleRequestDeposit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amt = parseFloat(customCoins);
+    if (!amt || amt <= 0) return error('Invalid amount');
+    if (!txHash) return error('Please provide the transaction hash');
+    
+    requestDeposit(amt, txHash);
+    success(`Deposit request for $${amt} submitted for admin verification!`);
+    setTxHash('');
+    setCustomCoins('500');
   };
 
   const handleGenerateLink = (e: React.FormEvent) => {
@@ -119,46 +126,48 @@ export default function WalletHubPage() {
             </div>
           </div>
 
-          {/* Simulated Instant Test Topup for UI Demonstration */}
+          {/* Real Deposit Verification Form */}
           <div className="bg-card p-8 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-transparent space-y-6 shadow-md">
             <div className="flex items-center justify-between">
               <h3 className="font-['Space_Grotesk'] text-lg font-bold text-foreground flex items-center gap-2">
-                <DollarSign size={20} className="text-emerald-400" /> Sandbox & Verification Injector
+                <ShieldCheck size={20} className="text-emerald-400" /> Verify Deposit Transfer
               </h3>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                Live Test Active
-              </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              For testing and previewing your campaign operations right now, you can directly simulate injecting AdBez Coins into your personal wallet ledger!
+              After sending USDT to the Vault address above, enter the amount and transaction hash below. Our Admin team will verify it on the blockchain and credit your wallet.
             </p>
 
-            <div>
-              <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Simulated Coins Amount ($)</label>
-              <div className="flex gap-2">
+            <form onSubmit={handleRequestDeposit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Transferred Amount (USDT)</label>
                 <input
                   type="number"
                   value={customCoins}
                   onChange={(e) => setCustomCoins(e.target.value)}
-                  className="bg-muted/50 border border-border/50 rounded-xl px-4 py-3 font-['Space_Grotesk'] text-xl font-bold text-foreground flex-1 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-3 font-['Space_Grotesk'] text-xl font-bold text-foreground focus:outline-none focus:border-emerald-500"
+                  required
                 />
-                <button
-                  onClick={() => handleSimulateDeposit(parseFloat(customCoins) || 500)}
-                  className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-emerald-500/20 transition-all shrink-0"
-                >
-                  Inject Coins Now
-                </button>
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <button onClick={() => handleSimulateDeposit(500)} className="py-2.5 rounded-xl bg-muted/50 hover:bg-muted border border-border/50 text-xs font-bold text-foreground transition-colors">
-                + $500 AdBez Coins
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Transaction Hash (TxID)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 0xabcd1234..."
+                  value={txHash}
+                  onChange={(e) => setTxHash(e.target.value)}
+                  className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-emerald-500/20 transition-all shrink-0 mt-2"
+              >
+                Submit for Verification
               </button>
-              <button onClick={() => handleSimulateDeposit(2500)} className="py-2.5 rounded-xl bg-muted/50 hover:bg-muted border border-border/50 text-xs font-bold text-foreground transition-colors">
-                + $2,500 VIP Tier Coins
-              </button>
-            </div>
+            </form>
           </div>
         </motion.div>
       )}
@@ -223,9 +232,6 @@ export default function WalletHubPage() {
               <h3 className="font-['Space_Grotesk'] text-xl font-bold text-foreground">Wallet Flow (Double-Entry Ledger)</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Complete chronological record of every credit and debit applied to your account.</p>
             </div>
-            <button onClick={() => handleSimulateDeposit(100)} className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
-              + Simulate $100 Credit
-            </button>
           </div>
 
           <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-md">

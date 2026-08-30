@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Wallet, MonitorSmartphone, Globe, Video, Share2, Search,
-  BookOpen, ChevronRight, Sparkles, UserCheck
+  BookOpen, ChevronRight, Sparkles, UserCheck, Receipt
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, cn } from '@/lib/utils';
@@ -19,7 +19,8 @@ const agencyNavItems = [
   { href: '/dashboard/tiktok',   icon: Video,           label: 'TikTok Business',   color: 'text-pink-400' },
   { href: '/dashboard/snapchat', icon: Share2,          label: 'Snapchat Agency',   color: 'text-yellow-300' },
   { href: '/dashboard/bing',     icon: Search,          label: 'Bing Ads VIP',      color: 'text-sky-400' },
-  { type: 'divider', label: 'Knowledge' },
+  { type: 'divider', label: 'History & Knowledge' },
+  { href: '/dashboard/history',  icon: Receipt,         label: 'Order History',     color: 'text-rose-400' },
   { href: '/dashboard/guide',    icon: BookOpen,        label: 'Interactive Guide', color: 'text-violet-400' },
 ];
 

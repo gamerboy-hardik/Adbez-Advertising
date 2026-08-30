@@ -64,8 +64,28 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
   const [refundAmount, setRefundAmount] = useState('');
 
   // Filtered store data
-  const platformAccounts = (accounts || []).filter(a => a.platform === platform);
+  const platformAccountsRaw = accounts.filter(a => a.platform === platform);
+  
+  // Merge pending/approved applications into the account list so users see their requested accounts
+  const pendingAppsAsAccounts = applications
+    .filter(app => app.platform === platform && (app.status === 'Pending' || app.status === 'Approved'))
+    .map(app => ({
+      id: app.id,
+      platform: app.platform as any,
+      accountName: `${app.licenseName} (Application)`,
+      accountId: 'PENDING-PROVISION',
+      status: 'Under Review' as 'Active' | 'Under Review' | 'Disabled' | 'Payment Error',
+      spendLimit: app.budgetAllocation,
+      currentBalance: app.depositAmount || 0,
+      licenseName: app.licenseName,
+      loginEmail: 'Pending Assignment',
+      proxyIp: 'Pending Assignment',
+      createdAt: app.appliedDate
+    }));
+    
+  const platformAccounts = [...platformAccountsRaw, ...pendingAppsAsAccounts];
   const platformApplications = (applications || []).filter(a => a.platform === platform);
+
   const platformBMs = (bmShares || []).filter(a => a.platform === platform);
   const platformDeposits = (deposits || []).filter(a => a.platform === platform);
   const platformTransfers = (transfers || []).filter(a => a.platform === platform);
@@ -327,7 +347,11 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                           <span className="font-['Space_Grotesk'] text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                             {acc.accountName}
                           </span>
-                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${acc.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-sm shadow-emerald-500/10' : 'bg-rose-500/10 text-rose-400 border-rose-500/30'}`}>
+                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            acc.status === 'Active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-sm shadow-emerald-500/10' :
+                            acc.status === 'Under Review' ? 'bg-amber-500/10 text-amber-500 border-amber-500/30' :
+                            'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                          }`}>
                             ● {acc.status}
                           </span>
                         </div>
