@@ -40,7 +40,7 @@ async function authenticate(req, res, next) {
           data: {
             email,
             passwordHash: 'FIREBASE_AUTH',
-            role: ['admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'].includes(email.toLowerCase()) ? 'ADMIN' : 'CLIENT',
+            role: ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'].includes(email.toLowerCase()) ? 'ADMIN' : 'CLIENT',
             provider: providerStr,
             lastLogin: new Date(),
             ipAddress: ip,
@@ -50,7 +50,7 @@ async function authenticate(req, res, next) {
         dbUser = await prisma.user.update({
           where: { email },
           data: {
-            role: ['admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'].includes(email.toLowerCase()) ? 'ADMIN' : undefined,
+            role: ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'].includes(email.toLowerCase()) ? 'ADMIN' : undefined,
             provider: providerStr,
             lastLogin: new Date(),
             ipAddress: ip,
@@ -70,7 +70,7 @@ async function authenticate(req, res, next) {
       req.user = {
         userId: 'mock-uuid-1234',
         email: email,
-        role: ['admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'].includes(email.toLowerCase()) ? 'ADMIN' : 'CLIENT',
+        role: ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'].includes(email.toLowerCase()) ? 'ADMIN' : 'CLIENT',
       };
     }
 
