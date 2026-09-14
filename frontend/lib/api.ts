@@ -65,7 +65,12 @@ async function apiFetch<T>(
   };
 
   try {
-    const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    
+    const res = await fetch(`${API_BASE}${path}`, { ...options, headers, signal: controller.signal });
+    clearTimeout(timeoutId);
+    
     const json: ApiResponse<T> = await res.json();
 
     // Auto-refresh on 401 TOKEN_EXPIRED
@@ -77,8 +82,11 @@ async function apiFetch<T>(
     }
 
     return json;
-  } catch (err) {
+  } catch (err: any) {
     console.error(`[API Fetch Error] ${path}:`, err);
+    if (err.name === 'AbortError') {
+      return { success: false, error: 'TIMEOUT', message: 'Connection timed out' } as any;
+    }
     return { success: false, error: 'Network Error', message: 'Could not connect to server' } as any;
   }
 }

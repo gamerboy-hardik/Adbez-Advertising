@@ -8,10 +8,7 @@ import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useAuthStore } from '@/store/authStore';
 
-const LoginCanvas = dynamic(() => import('@/components/three/LoginCanvas').then(m => m.LoginCanvas), {
-  ssr: false,
-  loading: () => null,
-});
+// Removed 3D canvas import as requested by user
 
 /* ── Framer Motion Variants ── */
 const containerVariants: Variants = {
@@ -359,9 +356,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-56px)] w-full flex bg-background">
-      {/* Left: 3D Visual */}
-      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden border-r border-border">
-        <LoginCanvas />
+      {/* Left: Visual/Text Area */}
+      <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden border-r border-border bg-muted/20">
         {/* Overlay text */}
         <motion.div 
           className="relative z-10 text-center px-16"
