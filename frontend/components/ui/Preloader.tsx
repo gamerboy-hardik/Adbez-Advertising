@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function Preloader() {
+export function Preloader({ fullScreen, text }: { fullScreen?: boolean; text?: string } = {}) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function Preloader() {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.6, ease: 'easeInOut' } }}
-          className="fixed inset-0 z-[9999] bg-[#030712] flex flex-col items-center justify-center overflow-hidden"
+          className={`z-[9999] bg-[#030712] flex flex-col items-center justify-center overflow-hidden ${fullScreen ? 'fixed inset-0' : 'fixed inset-0'}`}
         >
           {/* Subtle background glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -76,7 +76,7 @@ export function Preloader() {
             transition={{ delay: 0.8 }}
             className="mt-6 text-xs tracking-[0.2em] font-bold text-muted-foreground uppercase"
           >
-            Initializing AdBez Node
+            {text || 'Initializing AdBez Node'}
           </motion.p>
         </motion.div>
       )}
