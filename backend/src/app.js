@@ -11,6 +11,7 @@ const accountRoutes = require('./routes/accounts');
 const transactionRoutes = require('./routes/transactions');
 const footprintRoutes = require('./routes/footprint');
 const adminRoutes = require('./routes/admin');
+const adminRequestsRoutes = require('./routes/adminRequests');
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use('/api/accounts', accountRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/footprint', footprintRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/requests', adminRequestsRoutes);
 
 // ─── 404 HANDLER ─────────────────────────────────────────────────────────────
 app.use((_req, res) => {

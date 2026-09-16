@@ -6,6 +6,8 @@ const {
   getFootprintLogs,
   getAllUsers, updateUserWallet,
   getDashboardStats,
+  getAllRequests,
+  actionRequest,
 } = require('../controllers/adminController');
 const { authenticate } = require('../middleware/auth');
 const { adminOnly } = require('../middleware/adminOnly');
@@ -18,6 +20,10 @@ router.use(authenticate, adminOnly);
 
 // ─── DASHBOARD ────────────────────────────────────────────────────────────────
 router.get('/stats', apiLimiter, getDashboardStats);
+
+// ─── REQUESTS (TOPUP / APPS) ──────────────────────────────────────────────────
+router.get('/requests', apiLimiter, getAllRequests);
+router.patch('/requests/:id', apiLimiter, actionRequest);
 
 // ─── ACCOUNTS (Inventory Control Matrix) ─────────────────────────────────────
 router.get('/accounts', apiLimiter, getAllAccounts);

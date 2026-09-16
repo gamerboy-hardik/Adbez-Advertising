@@ -372,10 +372,90 @@ async function getDashboardStats(req, res) {
   }
 }
 
+// ─── REQUESTS (TOPUP / APPS) ──────────────────────────────────────────────────
+
+/**
+ * GET /api/admin/requests
+ * Admin fetches all requests.
+ */
+async function getAllRequests(req, res) {
+  try {
+    const { status, type, page = 1, limit = 50 } = req.query;
+    const where = {};
+    if (status) where.status = status;
+    if (type) where.type = type;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const take = Math.min(parseInt(limit), 100);
+
+    const [requests, total] = await Promise.all([
+      prisma.adminRequest.findMany({
+        where,
+        skip,
+        take,
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { email: true, name: true, walletBalance: true } } }
+      }),
+      prisma.adminRequest.count({ where })
+    ]);
+
+    return res.json({
+      success: true,
+      data: { requests, pagination: { total, page: parseInt(page), limit: take, totalPages: Math.ceil(total / take) } }
+    });
+  } catch (err) {
+    console.error('[ADMIN] getAllRequests error:', err);
+    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+  }
+}
+
+/**
+ * PATCH /api/admin/requests/:id
+ * Admin approves or denies a request.
+ */
+async function actionRequest(req, res) {
+  try {
+    const { id } = req.params;
+    const { status, notes } = req.body;
+    
+    if (!['APPROVED', 'DENIED'].includes(status)) {
+      return res.status(400).json({ success: false, error: 'INVALID_STATUS' });
+    }
+
+    const request = await prisma.adminRequest.findUnique({ where: { id } });
+    if (!request) return res.status(404).json({ success: false, error: 'NOT_FOUND' });
+    if (request.status !== 'PENDING') return res.status(400).json({ success: false, error: 'ALREADY_PROCESSED' });
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updated = await tx.adminRequest.update({
+        where: { id },
+        data: { status, notes }
+      });
+
+      if (status === 'APPROVED' && request.type === 'WALLET_TOPUP' && request.amount) {
+        await tx.user.update({
+          where: { id: request.userId },
+          data: { walletBalance: { increment: request.amount } }
+        });
+      }
+
+      return updated;
+    });
+
+    return res.json({ success: true, data: result });
+  } catch (err) {
+    console.error('[ADMIN] actionRequest error:', err);
+    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+  }
+}
+
 module.exports = {
   getAllAccounts, createAccount, updateAccount, deleteAccount, importAccounts,
   getAllTransactions, updateTransactionStatus,
   getFootprintLogs,
-  getAllUsers, updateUserWallet,
+  getAllUsers,
+  updateUserWallet,
   getDashboardStats,
+  getAllRequests,
+  actionRequest
 };

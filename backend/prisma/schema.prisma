@@ -36,6 +36,17 @@ enum TransactionType {
   WALLET_TOPUP
 }
 
+enum RequestType {
+  WALLET_TOPUP
+  ACCOUNT_APPLICATION
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  DENIED
+}
+
 // ─── MODELS ──────────────────────────────────────────────────────────────────
 
 model User {
@@ -53,6 +64,7 @@ model User {
   transactions  Transaction[]
   footprintLogs FootprintLog[]
   refreshTokens RefreshToken[]
+  adminRequests AdminRequest[]
 
   @@map("users")
 }
@@ -150,4 +162,20 @@ model RefreshToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
+}
+
+model AdminRequest {
+  id          String        @id @default(uuid())
+  userId      String        @map("user_id")
+  type        RequestType
+  amount      Float?
+  metadata    Json?
+  status      RequestStatus @default(PENDING)
+  notes       String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("admin_requests")
 }

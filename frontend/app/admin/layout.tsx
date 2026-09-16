@@ -13,6 +13,7 @@ const navItems = [
   { href: '/admin',              icon: LayoutDashboard, label: 'Dashboard'          },
   { href: '/admin/inventory',    icon: Package,         label: 'Inventory Control'  },
   { href: '/admin/transactions', icon: Receipt,         label: 'Transaction Ledger' },
+  { href: '/admin/requests',     icon: Shield,          label: 'User Requests'      },
   { href: '/admin/footprint',    icon: Fingerprint,     label: 'Footprint Monitor'  },
   { href: '/admin/users',        icon: Users,           label: 'User Management'    },
 ];

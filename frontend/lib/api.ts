@@ -174,6 +174,20 @@ export const transactionsApi = {
     apiFetch<{ id: string; totalAmount: number; paymentStatus: string; assets: unknown[] }>(`/transactions/${id}`),
 };
 
+// ─── REQUESTS ─────────────────────────────────────────────────────────────────
+
+export const requestsApi = {
+  create: (type: 'WALLET_TOPUP' | 'ACCOUNT_APPLICATION', amount?: number, metadata?: any) =>
+    apiFetch('/requests', {
+      method: 'POST',
+      body: JSON.stringify({ type, amount, metadata }),
+    }),
+  list: (params?: Record<string, string | number>) => {
+    const qs = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    return apiFetch<{ requests: any[]; pagination: unknown }>(`/requests${qs}`);
+  },
+};
+
 // ─── FOOTPRINT ────────────────────────────────────────────────────────────────
 
 export const footprintApi = {
@@ -267,4 +281,12 @@ export const adminApi = {
     apiFetch(`/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
   updateUserWallet: (id: string, amount: number) =>
     apiFetch(`/admin/users/${id}/wallet`, { method: 'PUT', body: JSON.stringify({ amount }) }),
+
+  // Requests
+  listRequests: (params?: Record<string, string | number>) => {
+    const qs = params ? '?' + new URLSearchParams(params as Record<string, string>).toString() : '';
+    return apiFetch<{ requests: any[]; pagination: unknown }>(`/admin/requests${qs}`);
+  },
+  actionRequest: (id: string, status: 'APPROVED' | 'DENIED', notes?: string) =>
+    apiFetch(`/admin/requests/${id}`, { method: 'PATCH', body: JSON.stringify({ status, notes }) }),
 };

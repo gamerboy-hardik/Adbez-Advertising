@@ -10,6 +10,8 @@ import { useAuthStore } from '@/store/authStore';
 import { useToastStore } from '@/store/toastStore';
 import { formatCurrency } from '@/lib/utils';
 
+import { requestsApi } from '@/lib/api';
+
 export default function WalletHubPage() {
   const [tab, setTab] = useState<'add-money' | 'pay-link' | 'wallet-flow'>('wallet-flow');
   const [copied, setCopied] = useState(false);
@@ -18,22 +20,30 @@ export default function WalletHubPage() {
   const [payLinkNote, setPayLinkNote] = useState('AdBez Media Spend Allocation #2026-Q3');
   const [generatedLink, setGeneratedLink] = useState('');
   const [txHash, setTxHash] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { walletFlows, requestDeposit } = useAgencyStore();
+  const { walletFlows } = useAgencyStore();
   const { user } = useAuthStore();
   const { success, error } = useToastStore();
   const balance = user?.walletBalance ?? 0;
 
-  const handleRequestDeposit = (e: React.FormEvent) => {
+  const handleRequestDeposit = async (e: React.FormEvent) => {
     e.preventDefault();
     const amt = parseFloat(customCoins);
     if (!amt || amt <= 0) return error('Invalid amount');
     if (!txHash) return error('Please provide the transaction hash');
     
-    requestDeposit(amt, txHash);
-    success(`Deposit request for $${amt} submitted for admin verification!`);
-    setTxHash('');
-    setCustomCoins('500');
+    setIsSubmitting(true);
+    const res = await requestsApi.create('WALLET_TOPUP', amt, { txHash });
+    setIsSubmitting(false);
+
+    if (res.success) {
+      success(`Deposit request for $${amt} submitted for admin verification!`);
+      setTxHash('');
+      setCustomCoins('500');
+    } else {
+      error('Failed to submit request.');
+    }
   };
 
   const handleGenerateLink = (e: React.FormEvent) => {

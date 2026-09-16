@@ -8,11 +8,24 @@ import {
 import { useAgencyStore } from '@/store/useAgencyStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatCurrency } from '@/lib/utils';
+import { transactionsApi } from '@/lib/api';
+import { useEffect, useState } from 'react';
 
 export default function DashboardOverview() {
   const { accounts, walletFlows } = useAgencyStore();
   const { user } = useAuthStore();
   const balance = user?.walletBalance ?? 0;
+  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const res = await transactionsApi.list({ limit: 5 });
+      if (res.success && res.data) {
+        setRecentTransactions(res.data.transactions || []);
+      }
+    };
+    fetchHistory();
+  }, []);
 
   const totalSpendLimit = (accounts || []).reduce((acc, a) => acc + (a.status === 'Active' ? a.spendLimit : 0), 0);
   const totalBalanceInAds = (accounts || []).reduce((acc, a) => acc + a.currentBalance, 0);
@@ -178,42 +191,51 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* Recent Ledger Activities */}
-      <div className="space-y-4">
+      {/* Purchase History */}
+      <div className="space-y-4 pt-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-['Space_Grotesk'] text-lg font-bold text-foreground flex items-center gap-2">
-            <Activity size={18} className="text-emerald-400" /> Recent Wallet & Ad Spend Flows
+          <h2 className="font-['Space_Grotesk'] text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
+            <Activity size={18} className="text-emerald-400" /> Recent Activity & Purchases
           </h2>
-          <Link href="/dashboard/wallet" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
-            View full double-entry ledger <ArrowRight size={12} />
+          <Link href="/dashboard/history" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+            View full history <ArrowRight size={12} />
           </Link>
         </div>
-
-        <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b border-border/60 bg-muted/30 text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
-                <th className="px-6 py-3.5 text-left">Event Description</th>
-                <th className="px-6 py-3.5 text-left">Category</th>
-                <th className="px-6 py-3.5 text-left">Amount</th>
-                <th className="px-6 py-3.5 text-left">Balance After</th>
-                <th className="px-6 py-3.5 text-left">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50 text-xs">
-              {(walletFlows || []).slice(0, 4).map((f) => (
-                <tr key={f.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-semibold text-foreground">{f.description}</td>
-                  <td className="px-6 py-4 text-muted-foreground"><span className="px-2.5 py-0.5 rounded-full bg-muted border border-border text-[10px]">{f.category}</span></td>
-                  <td className={`px-6 py-4 font-['Space_Grotesk'] font-bold ${f.type === 'Credit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                    {f.type === 'Credit' ? '+' : '-'}{formatCurrency(f.amount)}
-                  </td>
-                  <td className="px-6 py-4 font-mono font-semibold text-foreground">{formatCurrency(f.balanceAfter)}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{f.date}</td>
+        <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+          {recentTransactions.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              No recent purchases found in the ledger.
+            </div>
+          ) : (
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/30 border-b border-border text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-6 py-3 font-semibold">Order Ref</th>
+                  <th className="px-6 py-3 font-semibold">Date</th>
+                  <th className="px-6 py-3 font-semibold">Event Type</th>
+                  <th className="px-6 py-3 font-semibold text-right">Amount Deducted</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {recentTransactions.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-muted/10 transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{tx.id.split('-')[0]}</td>
+                    <td className="px-6 py-4 text-xs font-medium">
+                      {new Date(tx.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="px-2 py-1 bg-accent/10 text-accent rounded-full text-[10px] font-bold uppercase">
+                        {tx.type.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right font-bold text-emerald-400">
+                      {formatCurrency(tx.totalAmount)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
