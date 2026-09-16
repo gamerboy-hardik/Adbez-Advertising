@@ -107,7 +107,7 @@ function CheckoutContent() {
       {/* Success Header */}
       <motion.div
         variants={cardVariants}
-        className="flex items-center gap-4 mb-8 p-5 bg-emerald-500/[0.06] border border-emerald-500/20 rounded-2xl relative overflow-hidden"
+        className="flex items-start sm:items-center gap-3 sm:gap-4 mb-8 p-4 sm:p-5 bg-emerald-500/[0.06] border border-emerald-500/20 rounded-2xl relative overflow-hidden"
       >
         {/* Shimmer effect */}
         <motion.div 
@@ -116,17 +116,17 @@ function CheckoutContent() {
           transition={{ duration: 3, repeat: Infinity, ease: 'linear', repeatDelay: 2 }}
         />
         <motion.div 
-          className="w-12 h-12 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0 relative z-10"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0 relative z-10"
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <CheckCircle2 size={24} className="text-emerald-400" />
+          <CheckCircle2 size={22} className="text-emerald-400" />
         </motion.div>
-        <div className="flex-1 relative z-10">
-          <h1 className="font-['Outfit'] text-lg font-bold text-foreground">
+        <div className="flex-1 relative z-10 min-w-0">
+          <h1 className="font-['Outfit'] text-base sm:text-lg font-bold text-foreground">
             Order Confirmed — Assets Provisioned
           </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[11px] text-muted-foreground mt-0.5 break-all">
             {formatDate(data.purchasedAt || new Date().toISOString())} · {formatCurrency(data.totalAmount)}
           </p>
         </div>
@@ -154,15 +154,15 @@ function CheckoutContent() {
               whileHover={{ scale: 1.005 }}
             >
               {/* Asset Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{asset.countryFlag || '🏳'}</span>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">{asset.profileName}</p>
+              <div className="flex items-start sm:items-center justify-between px-4 sm:px-5 py-3.5 sm:py-4 border-b border-border gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-xl flex-shrink-0">{asset.countryFlag || '🏳'}</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-foreground truncate">{asset.profileName}</p>
                     <p className="text-[10px] text-muted-foreground">{asset.platform} · {asset.country || 'N/A'}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <motion.button
                     onClick={() => copyToClipboard(credsStr)}
                     whileHover={{ scale: 1.1 }}

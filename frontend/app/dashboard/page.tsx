@@ -39,21 +39,21 @@ export default function DashboardOverview() {
   ];
 
   return (
-    <div className="space-y-10 pb-16">
+    <div className="space-y-6 sm:space-y-10 pb-20 sm:pb-16">
       {/* Welcome Banner */}
       <motion.div 
         initial={{ opacity: 0, y: 15 }} 
         animate={{ opacity: 1, y: 0 }} 
-        className="p-8 rounded-3xl border border-border bg-card relative overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+        className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl border border-border bg-card relative overflow-hidden shadow-sm hover:shadow-md transition-shadow"
       >
         <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
+          <div className="space-y-1.5 sm:space-y-2 max-w-2xl">
             <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
               <Sparkles size={14} className="text-amber-400 animate-pulse" />
               <span>Institutional Media Buying Hub</span>
             </div>
-            <h1 className="font-['Space_Grotesk'] text-3xl md:text-4xl font-black text-foreground tracking-tight">
+            <h1 className="font-['Space_Grotesk'] text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
               Welcome back to your AdBez Control Matrix.
             </h1>
             <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
@@ -71,45 +71,45 @@ export default function DashboardOverview() {
         </div>
       </motion.div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Stats Cards — 2-col on mobile */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
         <div className="p-6 rounded-3xl border border-border bg-card relative overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <Wallet size={20} />
+          <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+              <Wallet size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">AdBez Wallet Balance</p>
-              <h3 className="font-['Space_Grotesk'] text-2xl font-black text-emerald-400 mt-0.5">{formatCurrency(balance)}</h3>
+              <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground">AdBez Wallet</p>
+              <h3 className="font-['Space_Grotesk'] text-lg sm:text-2xl font-black text-emerald-700 dark:text-emerald-400 mt-0.5">{formatCurrency(balance)}</h3>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground/80">Available immediately for ad account top-ups & setup fees.</p>
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground/80 hidden sm:block">Available immediately for ad account top-ups &amp; setup fees.</p>
         </div>
 
         <div className="p-6 rounded-3xl border border-border bg-card relative overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-primary/10 text-primary border border-primary/20">
-              <Layers size={20} />
+          <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-primary/10 text-primary border border-primary/20">
+              <Layers size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Active Ad Spend Pool</p>
-              <h3 className="font-['Space_Grotesk'] text-2xl font-black text-foreground mt-0.5">{formatCurrency(totalBalanceInAds)}</h3>
+              <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Ad Spend Pool</p>
+              <h3 className="font-['Space_Grotesk'] text-lg sm:text-2xl font-black text-foreground mt-0.5">{formatCurrency(totalBalanceInAds)}</h3>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground/80">Total working advertising balance currently allocated in platforms.</p>
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground/80 hidden sm:block">Total working advertising balance currently allocated in platforms.</p>
         </div>
 
         <div className="p-6 rounded-3xl border border-border bg-card relative overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
-              <TrendingUp size={20} />
+          <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
+              <TrendingUp size={18} />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Daily Whitelisted Limit</p>
-              <h3 className="font-['Space_Grotesk'] text-2xl font-black text-violet-400 mt-0.5">${(totalSpendLimit / 1000).toFixed(0)}K / Day</h3>
+              <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Daily Limit</p>
+              <h3 className="font-['Space_Grotesk'] text-lg sm:text-2xl font-black text-violet-400 mt-0.5">${(totalSpendLimit / 1000).toFixed(0)}K</h3>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground/80">Combined maximum scaling capacity across all agency ad accounts.</p>
+          <p className="text-[10px] sm:text-[11px] text-muted-foreground/80 hidden sm:block">Combined maximum scaling capacity across all agency ad accounts.</p>
         </div>
       </div>
 
@@ -122,7 +122,7 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
           {platforms.map((p, idx) => {
             const count = (accounts || []).filter(a => a.platform === p.slug.toUpperCase()).length;
             const Icon = p.icon;

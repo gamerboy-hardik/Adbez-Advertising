@@ -113,7 +113,7 @@ export default function MarketplacePage() {
 
   return (
     <div className="flex h-[calc(100vh-58px)] overflow-hidden items-start">
-      {/* Left Sidebar */}
+      {/* Left Sidebar — hidden on mobile, shown via hamburger */}
       <Sidebar 
         activeCategory={activeCategory} 
         onCategoryChange={(cat) => {
@@ -135,10 +135,10 @@ export default function MarketplacePage() {
         ) : (
           <>
             {/* Hero Banner */}
-            <div className="relative overflow-hidden rounded-2xl md:rounded-[24px] mb-6 md:mb-8 min-h-[220px] md:min-h-[280px] border border-border">
-              <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/20" />
+            <div className="relative overflow-hidden rounded-2xl md:rounded-[24px] mb-5 md:mb-8 min-h-[180px] md:min-h-[280px] border border-border">
+              <div className="absolute inset-0 bg-gradient-to-r from-background/98 via-background/85 to-background/30" />
               
-              <div className="relative z-10 p-6 md:p-12 flex flex-col gap-4 md:gap-5 max-w-[680px]">
+              <div className="relative z-10 p-5 sm:p-8 md:p-12 flex flex-col gap-3 md:gap-5 max-w-[680px]">
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--success-subtle)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 20, padding: '5px 14px', width: 'fit-content' }}
@@ -149,7 +149,7 @@ export default function MarketplacePage() {
                 
                 <motion.h1 
                   initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.2 } } }}
-                  style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: 'clamp(28px, 3.5vw, 44px)', lineHeight: 1.15, color: 'var(--text-primary)', margin: 0 }}
+                  style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: 'clamp(22px, 4vw, 44px)', lineHeight: 1.15, color: 'var(--text-primary)', margin: 0 }}
                 >
                   <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} style={{ display: 'block' }}>Institutional-Grade</motion.span>
                   <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="gradient-text" style={{ display: 'block' }}>Ad Account Infrastructure</motion.span>
@@ -157,24 +157,25 @@ export default function MarketplacePage() {
                 
                 <motion.p 
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-                  style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0, maxWidth: 480 }}
+                  style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0, maxWidth: 480 }}
+                  className="hidden sm:block"
                 >
                   Premium verified ad accounts, business managers, and Facebook assets built for institutional-scale media buying operations.
                 </motion.p>
                 
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}
-                  style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 28px', marginTop: 12 }}
+                  style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 20px', marginTop: 4 }}
                 >
-                  <button className="btn-gradient" style={{ padding: '10px 22px', borderRadius: 12, fontWeight: 600, fontSize: 14, color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 12px rgba(var(--accent-rgb), 0.2)' }}>
+                  <button className="btn-gradient" style={{ padding: '9px 20px', borderRadius: 12, fontWeight: 600, fontSize: 13, color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 12px rgba(var(--accent-rgb), 0.2)' }}>
                     Get Started
                   </button>
                 </motion.div>
               </div>
             </div>
 
-            {/* Cinematic Features (Scroll Reveal) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 mb-8 md:mb-10">
+            {/* Feature Cards — stack on mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 md:mb-10">
               {[
                 { title: "100% Verified", desc: "Every asset is manually vetted by our QA team before listing.", icon: Shield, color: "#8b5cf6" },
                 { title: "Instant Delivery", desc: "Assets are delivered to your inventory instantly upon purchase.", icon: Zap, color: "#22d3ee" },
@@ -198,12 +199,11 @@ export default function MarketplacePage() {
               ))}
             </div>
 
-            {/* Stats Row */}
+            {/* Stats Row — 2 cols on mobile, auto on desktop */}
             <motion.div 
               initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }}
               variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-              className="grid grid-cols-2 md:grid-cols-auto-fit gap-3 md:gap-4 mb-6 md:mb-8"
-              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6 md:mb-8"
             >
               {[
                 { label: 'Active Assets',   val: '2,492', icon: Activity,   color: '#3b82f6' },
@@ -222,27 +222,27 @@ export default function MarketplacePage() {
               ))}
             </motion.div>
 
-            {/* Search Bar */}
-            <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-6 md:mb-9">
-              <div style={{ position: 'relative', flex: 1, maxWidth: 480 }}>
-                <Search size={15} style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            {/* Search Bar — full width on mobile */}
+            <div className="flex gap-2 mb-5 md:mb-9">
+              <div style={{ position: 'relative', flex: 1 }}>
+                <Search size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                 <input
                   type="text"
                   className="input-field"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  placeholder="Search ad accounts, profiles, BMs..."
-                  style={{ paddingLeft: 44, paddingRight: 16 }}
+                  placeholder="Search ad accounts, BMs..."
+                  style={{ paddingLeft: 40, paddingRight: 16 }}
                 />
               </div>
-              <button style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 18px', borderRadius: 12, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease' }}>
-                <SlidersHorizontal size={15} /> Filters
+              <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '12px 14px', borderRadius: 12, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <SlidersHorizontal size={15} />
+                <span className="hidden sm:inline">Filters</span>
               </button>
             </div>
 
-            {/* Internal Category Navigation */}
-            <div className="bg-background/80" style={{ position: 'sticky', top: -28, zIndex: 40, backdropFilter: 'blur(24px)', padding: '16px 0', borderBottom: '1px solid var(--border)', marginBottom: 32, display: 'flex', gap: 12, overflowX: 'auto' }}>
-              <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
+            {/* Category Nav — horizontally scrollable pill row */}
+            <div className="bg-background/90 dark:bg-background/80" style={{ position: 'sticky', top: -28, zIndex: 40, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', padding: '12px 0', borderBottom: '1px solid var(--border)', marginBottom: 24, display: 'flex', gap: 8, overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
               {grouped.map(({ key }) => (
                 <button
                   key={key}
@@ -251,7 +251,7 @@ export default function MarketplacePage() {
                     document.getElementById(key)?.scrollIntoView({ behavior: 'smooth' });
                   }}
                   style={{ 
-                    padding: '8px 18px', borderRadius: 20, whiteSpace: 'nowrap', fontSize: 13, fontWeight: 600, 
+                    padding: '7px 14px', borderRadius: 20, whiteSpace: 'nowrap', fontSize: 12, fontWeight: 600, flexShrink: 0,
                     background: activeCategory === key ? 'var(--accent-subtle)' : 'var(--bg-glass)',
                     color: activeCategory === key ? 'var(--accent)' : 'var(--text-secondary)',
                     border: `1px solid ${activeCategory === key ? 'rgba(var(--accent-rgb),0.25)' : 'var(--border)'}`,
@@ -265,27 +265,27 @@ export default function MarketplacePage() {
 
             {/* Product Grid */}
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : (
               grouped.map(({ key, items }) => (
-                <section key={key} id={key} style={{ marginBottom: 56, scrollMarginTop: 140 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
-                    <h2 style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: 18, color: 'var(--text-primary)', margin: 0 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 10px rgba(var(--accent-rgb),0.6)', display: 'inline-block' }} />
+                <section key={key} id={key} style={{ marginBottom: 48, scrollMarginTop: 120 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid var(--border)' }}>
+                    <h2 style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: 16, color: 'var(--text-primary)', margin: 0 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 10px rgba(var(--accent-rgb),0.6)', display: 'inline-block', flexShrink: 0 }} />
                       {CATEGORY_LABELS[key] || key}
                     </h2>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)', background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '4px 12px', borderRadius: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                      {items.length} assets
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '3px 10px', borderRadius: 8, textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>
+                      {items.length}
                     </span>
                   </div>
                   {key === 'profiles' || key === 'bm-standard' || key === 'pages' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-1 gap-2.5">
                       {items.map(a => <ProductCard key={a.id} account={a} compact />)}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                       {items.map(a => <ProductCard key={a.id} account={a} />)}
                     </div>
                   )}

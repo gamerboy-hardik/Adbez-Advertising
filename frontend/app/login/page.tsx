@@ -356,7 +356,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-56px)] w-full flex bg-background">
-      {/* Left: Visual/Text Area */}
+      {/* Left: Visual/Text Area — hidden on mobile */}
       <div className="hidden lg:flex flex-1 relative items-center justify-center overflow-hidden border-r border-border bg-muted/20">
         {/* Overlay text */}
         <motion.div 
@@ -397,8 +397,8 @@ export default function LoginPage() {
         </motion.div>
       </div>
 
-      {/* Right: Form */}
-      <div className="w-full lg:w-[480px] shrink-0 flex items-center justify-center p-8 bg-card">
+      {/* Right: Form — full width on mobile */}
+      <div className="w-full lg:w-[480px] shrink-0 flex items-center justify-center p-5 sm:p-8 bg-card min-h-[calc(100vh-56px)]">
         <Suspense fallback={null}>
           <LoginForm />
         </Suspense>

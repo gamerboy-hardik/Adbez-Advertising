@@ -42,8 +42,8 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 shrink-0 border-r border-black/8 dark:border-white/8 bg-white dark:bg-[#111218] sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-6 px-4 flex flex-col justify-between shadow-[1px_0_0_0_rgba(0,0,0,0.06)] dark:shadow-none z-20">
+      {/* Sidebar Navigation — hidden on mobile */}
+      <aside className="hidden sm:flex w-64 shrink-0 border-r border-black/8 dark:border-white/8 bg-white dark:bg-[#111218] sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-6 px-4 flex-col justify-between shadow-[1px_0_0_0_rgba(0,0,0,0.06)] dark:shadow-none z-20">
         <div>
           {/* Brand header in sidebar */}
           <div className="flex items-center gap-2.5 px-3 mb-6">
@@ -118,9 +118,29 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
       </aside>
 
       {/* Main Workspace Content */}
-      <main className="flex-1 min-w-0 p-6 md:p-10 max-w-7xl mx-auto">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto">
         {children}
       </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-[200] bg-white dark:bg-[#111218] border-t border-black/8 dark:border-white/8 flex items-center justify-around px-2 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <Link href="/dashboard" className="flex flex-col items-center gap-0.5 p-2 rounded-xl text-muted-foreground hover:text-foreground transition-colors no-underline min-w-[48px]">
+          <LayoutDashboard size={20} />
+          <span className="text-[9px] font-semibold">Home</span>
+        </Link>
+        <Link href="/dashboard/wallet" className="flex flex-col items-center gap-0.5 p-2 rounded-xl text-muted-foreground hover:text-foreground transition-colors no-underline min-w-[48px]">
+          <Wallet size={20} />
+          <span className="text-[9px] font-semibold">Wallet</span>
+        </Link>
+        <Link href="/dashboard/history" className="flex flex-col items-center gap-0.5 p-2 rounded-xl text-muted-foreground hover:text-foreground transition-colors no-underline min-w-[48px]">
+          <Receipt size={20} />
+          <span className="text-[9px] font-semibold">Orders</span>
+        </Link>
+        <Link href="/dashboard/guide" className="flex flex-col items-center gap-0.5 p-2 rounded-xl text-muted-foreground hover:text-foreground transition-colors no-underline min-w-[48px]">
+          <BookOpen size={20} />
+          <span className="text-[9px] font-semibold">Guide</span>
+        </Link>
+      </nav>
     </div>
   );
 }
