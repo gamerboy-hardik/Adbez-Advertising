@@ -265,7 +265,7 @@ export default function MarketplacePage() {
 
             {/* Product Grid */}
             {loading ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : (
@@ -281,11 +281,11 @@ export default function MarketplacePage() {
                     </span>
                   </div>
                   {key === 'profiles' || key === 'bm-standard' || key === 'pages' ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                       {items.map(a => <ProductCard key={a.id} account={a} compact />)}
                     </div>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                       {items.map(a => <ProductCard key={a.id} account={a} />)}
                     </div>
                   )}
