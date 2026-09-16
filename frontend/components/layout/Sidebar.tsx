@@ -56,7 +56,7 @@ export function Sidebar({ activeCategory, onCategoryChange, counts = {}, onAddCl
         md:relative md:top-0 md:transform-none md:translate-x-0
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         overflow-y-auto custom-scrollbar border-r border-border p-5 flex flex-col gap-6 
-        bg-background/95 md:bg-background/80 backdrop-blur-md
+        bg-white dark:bg-[#111218] backdrop-blur-md shadow-none
       `}>
 
       {/* Main Navigation */}

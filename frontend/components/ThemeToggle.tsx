@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -13,17 +14,32 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <div className="w-8 h-8" />;
+    return <div className="w-9 h-9" />;
   }
 
+  const isDark = theme === 'dark';
+
   return (
-    <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="relative flex items-center justify-center w-8 h-8 rounded-full bg-muted/50 dark:bg-muted/50 border border-black/10 dark:border-border/50 text-slate-500 dark:text-slate-400 hover:text-foreground hover:bg-muted/50 dark:hover:bg-muted transition-colors"
+    <motion.button
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.92 }}
+      className={`relative flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-300
+        ${isDark 
+          ? 'bg-[#1E1F2A] border-white/10 text-slate-300 hover:border-indigo-500/30 hover:bg-[#252637] hover:text-indigo-300' 
+          : 'bg-slate-100 border-black/10 text-slate-600 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600 shadow-sm'
+        }`}
       aria-label="Toggle theme"
     >
-      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-foreground" />
-      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-foreground" />
-    </button>
+      <motion.div
+        key={isDark ? 'moon' : 'sun'}
+        initial={{ rotate: -30, opacity: 0, scale: 0.7 }}
+        animate={{ rotate: 0, opacity: 1, scale: 1 }}
+        exit={{ rotate: 30, opacity: 0, scale: 0.7 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+      >
+        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+      </motion.div>
+    </motion.button>
   );
 }

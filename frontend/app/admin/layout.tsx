@@ -91,7 +91,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
       {/* Admin Sidebar */}
-      <aside className="w-56 shrink-0 border-r border-border bg-background/60 backdrop-blur-sm sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-5 px-3">
+      <aside className="w-56 shrink-0 border-r border-black/8 dark:border-white/8 bg-white dark:bg-[#111218] sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-5 px-3">
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

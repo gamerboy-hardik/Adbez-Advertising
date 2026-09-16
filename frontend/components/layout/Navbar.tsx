@@ -32,8 +32,8 @@ export function Navbar() {
     <header
       className={`sticky top-0 z-[100] w-full h-[58px] flex items-center justify-between px-6 gap-4 transition-all duration-300 border-b
         ${scrolled
-          ? 'bg-background/95 backdrop-blur-xl border-border shadow-md'
-          : 'bg-background/80 backdrop-blur-lg border-transparent'
+          ? 'bg-white/95 dark:bg-[#0C0D12]/95 backdrop-blur-xl border-black/10 dark:border-white/10 shadow-sm dark:shadow-[0_1px_20px_rgba(0,0,0,0.3)]'
+          : 'bg-white/80 dark:bg-[#0C0D12]/80 backdrop-blur-lg border-transparent'
         }`}
     >
       {/* Scroll Progress */}

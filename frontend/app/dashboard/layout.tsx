@@ -43,7 +43,7 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
       {/* Sidebar Navigation */}
-      <aside className="w-64 shrink-0 border-r border-border/50 bg-card/90 backdrop-blur-md sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-6 px-4 flex flex-col justify-between shadow-md z-20">
+      <aside className="w-64 shrink-0 border-r border-black/8 dark:border-white/8 bg-white dark:bg-[#111218] sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-6 px-4 flex flex-col justify-between shadow-[1px_0_0_0_rgba(0,0,0,0.06)] dark:shadow-none z-20">
         <div>
           {/* Brand header in sidebar */}
           <div className="flex items-center gap-2.5 px-3 mb-6">
@@ -77,8 +77,8 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all text-xs font-semibold group relative overflow-hidden',
                     isActive
-                      ? 'bg-muted text-foreground font-bold shadow-sm border border-border'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      ? 'bg-slate-100 dark:bg-muted text-foreground font-bold shadow-sm border border-black/8 dark:border-border'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-slate-50 dark:hover:bg-muted/50'
                   )}
                 >
                   {isActive && (
@@ -94,17 +94,17 @@ export default function AgencyDashboardLayout({ children }: { children: React.Re
         </div>
 
         {/* Bottom user status card */}
-        <div className="pt-4 mt-6 border-t border-border/50 space-y-3">
-          <div className="p-3.5 rounded-2xl bg-muted/50 border border-border/50 space-y-2">
+        <div className="pt-4 mt-6 border-t border-black/8 dark:border-border/50 space-y-3">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/50 border border-black/8 dark:border-border/50 space-y-2">
             <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground">
               <Sparkles size={13} className="text-amber-500" />
               <span>AdBez Coins Available</span>
             </div>
-            <p className="font-['Space_Grotesk'] text-xl font-black text-emerald-600">
+            <p className="font-['Space_Grotesk'] text-xl font-black text-emerald-700 dark:text-emerald-400">
               {formatCurrency(balance)}
             </p>
             <Link href="/dashboard/wallet">
-              <button className="w-full py-1.5 mt-1 rounded-xl bg-background hover:bg-muted text-[11px] font-bold text-foreground border border-border transition-colors">
+              <button className="w-full py-1.5 mt-1 rounded-xl bg-white dark:bg-background hover:bg-slate-100 dark:hover:bg-muted text-[11px] font-bold text-foreground border border-black/8 dark:border-border transition-colors">
                 + Deposit Funds
               </button>
             </Link>
