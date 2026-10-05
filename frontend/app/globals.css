@@ -6,7 +6,7 @@
 
 /* ── Reset ───────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; font-size: 115%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html { scroll-behavior: smooth; font-size: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 html, body { width: 100%; max-width: 100%; letter-spacing: 0.01em; }
 
 /* ══════════════════════════════════════════════════════
@@ -135,8 +135,8 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(99, 102, 241, 0.04), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(139, 92, 246, 0.03), transparent 50%);
+    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(99, 102, 241, 0.025), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(139, 92, 246, 0.015), transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -399,20 +399,20 @@ body::before {
 }
 
 /* Scrollbar — mode-aware */
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.26);
 }
-* { scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.12) transparent; }
+* { scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.14) transparent; }
 
-.dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
-.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-.dark * { scrollbar-color: rgba(255, 255, 255, 0.1) transparent; }
+.dark ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); }
+.dark ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+.dark * { scrollbar-color: rgba(255, 255, 255, 0.12) transparent; }
 
 /* ── Animations ──────────────────────────────────────── */
 @keyframes float {
@@ -722,7 +722,7 @@ body::before {
     word-break: break-word;
   }
 
-  /* Reduce font-size to base 100% on mobile for better sizing */
+  /* Keep font-size at 100% on mobile */
   html { font-size: 100%; }
 
   /* Card padding on mobile */
@@ -806,12 +806,16 @@ body::before {
 /* Ensure emerald green is visible in light */
 :root .text-emerald-400 { color: #059669 !important; }
 :root .text-emerald-500 { color: #047857 !important; }
+:root .text-emerald-700 { color: #065f46 !important; }
 .dark .text-emerald-400 { color: #34D399 !important; }
 .dark .text-emerald-500 { color: #10B981 !important; }
+.dark .text-emerald-700 { color: #6EE7B7 !important; }
 
-/* Ensure red is visible in light */
-:root .text-red-400 { color: #DC2626 !important; }
-.dark  .text-red-400 { color: #F87171 !important; }
+/* Ensure red/rose is visible in light */
+:root .text-red-400  { color: #DC2626 !important; }
+:root .text-rose-400 { color: #E11D48 !important; }
+.dark .text-red-400  { color: #F87171 !important; }
+.dark .text-rose-400 { color: #FB7185 !important; }
 
 /* Better contrast for muted backgrounds in light */
 :root .bg-muted\/30 { background-color: rgba(241,245,249,0.8) !important; }

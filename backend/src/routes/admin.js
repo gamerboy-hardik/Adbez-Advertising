@@ -4,7 +4,7 @@ const {
   getAllAccounts, createAccount, updateAccount, deleteAccount, importAccounts,
   getAllTransactions, updateTransactionStatus,
   getFootprintLogs,
-  getAllUsers, updateUserWallet,
+  getAllUsers, updateUserWallet, updateUserRole,
   getDashboardStats,
   getAllRequests,
   actionRequest,
@@ -55,5 +55,6 @@ router.get('/footprint', apiLimiter, getFootprintLogs);
 // ─── USER MANAGEMENT ─────────────────────────────────────────────────────────
 router.get('/users', apiLimiter, getAllUsers);
 router.put('/users/:id/wallet', apiLimiter, updateUserWallet);
+router.put('/users/:id/role', apiLimiter, updateUserRole);
 
 module.exports = router;

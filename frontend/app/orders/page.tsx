@@ -187,7 +187,7 @@ export default function OrdersPage() {
                       {order.paymentStatus === 'COMPLETED' && (
                         <motion.button
                           variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
-                          onClick={() => router.push(`/checkout/${order.id}`)}
+                          onClick={() => router.push(`/checkout?id=${order.id}`)}
                           whileHover={{ x: 4 }}
                           className="flex items-center gap-2 text-xs font-semibold text-primary hover:text-cyan-300 transition-colors mt-1"
                         >

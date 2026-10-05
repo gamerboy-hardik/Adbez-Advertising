@@ -71,7 +71,7 @@ export function CartDrawer() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setDrawerOpen(false)}
-          className="fixed inset-0 bg-muted backdrop-blur-sm z-[200]"
+          className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-[200]"
         />
       )}
 
@@ -232,10 +232,10 @@ export function CartDrawer() {
               onClick={handleCheckout}
               disabled={loading}
               whileTap={{ scale: 0.97 }}
-              className="w-full py-3 bg-primary hover:opacity-90 text-primary-foreground font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-black/10 dark:shadow-white/10"
+              className="w-full py-3 bg-gradient-to-r from-[var(--accent)] to-indigo-500 hover:from-[var(--accent-hover)] hover:to-indigo-600 text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-glow active:scale-95"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-slate-400 border-t-slate-900 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
               ) : (
                 <>Initialize Provisioning Core <ArrowRight size={14} /></>
               )}

@@ -449,12 +449,39 @@ async function actionRequest(req, res) {
   }
 }
 
+/**
+ * PUT /api/admin/users/:id/role
+ * Update a user's role (CLIENT <-> ADMIN).
+ */
+async function updateUserRole(req, res) {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    if (!['CLIENT', 'ADMIN'].includes(role)) {
+      return res.status(400).json({ success: false, error: 'INVALID_ROLE', message: 'Role must be CLIENT or ADMIN.' });
+    }
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: { role },
+      select: { id: true, email: true, role: true, walletBalance: true },
+    });
+
+    return res.json({ success: true, data: { user } });
+  } catch (err) {
+    console.error('[ADMIN] updateUserRole error:', err);
+    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+  }
+}
+
 module.exports = {
   getAllAccounts, createAccount, updateAccount, deleteAccount, importAccounts,
   getAllTransactions, updateTransactionStatus,
   getFootprintLogs,
   getAllUsers,
   updateUserWallet,
+  updateUserRole,
   getDashboardStats,
   getAllRequests,
   actionRequest

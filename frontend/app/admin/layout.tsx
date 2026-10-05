@@ -90,8 +90,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-[calc(100vh-64px)]">
-      {/* Admin Sidebar */}
-      <aside className="w-56 shrink-0 border-r border-black/8 dark:border-white/8 bg-white dark:bg-[#111218] sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-5 px-3">
+      {/* Admin Sidebar — desktop only */}
+      <aside className="hidden md:block w-56 shrink-0 border-r border-black/8 dark:border-white/8 bg-white dark:bg-[#111218] sticky top-16 h-[calc(100vh-64px)] overflow-y-auto custom-scrollbar py-5 px-3">
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <motion.div
                       layoutId="admin-active-dot"
                       className="absolute right-3 w-1.5 h-1.5 rounded-full bg-[var(--accent)]"
-                      style={{ boxShadow: '0 0 8px rgba(0,229,255,0.6)' }}
+                      style={{ boxShadow: '0 0 8px rgba(79,70,229,0.5)' }}
                       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
                     />
                   )}
@@ -169,7 +169,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Admin Content */}
-      <main className="flex-1 min-w-0 p-4 md:p-7 overflow-x-hidden">
+      <main className="flex-1 min-w-0 p-4 md:p-7 overflow-x-hidden pb-24 md:pb-7">
         <AnimatePresence mode="wait">
           <motion.div
             key={pathname}
@@ -182,6 +182,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Mobile Bottom Navigation — admin */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[200] bg-white dark:bg-[#111218] border-t border-black/8 dark:border-white/8 flex items-center justify-around px-1 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        {navItems.slice(0, 5).map(({ href, icon: Icon, label }) => {
+          const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href));
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                'flex flex-col items-center gap-0.5 p-2 rounded-xl transition-colors no-underline min-w-[48px]',
+                isActive ? 'text-[var(--accent)]' : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Icon size={18} />
+              <span className="text-[8px] font-semibold truncate">{label.split(' ')[0]}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }

@@ -75,8 +75,9 @@ if (typeof window !== 'undefined') {
         if (data.success && data.data?.user) {
           useAuthStore.setState({ user: data.data.user, isLoading: false });
         } else {
-          // Fallback if backend returns failure
-          const role = firebaseUser.email?.toLowerCase().includes('admin') ? 'ADMIN' : 'CLIENT';
+          // Fallback if backend returns failure — use exact admin email list (matches backend)
+          const ADMIN_EMAILS = ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'];
+          const role = ADMIN_EMAILS.includes(firebaseUser.email?.toLowerCase() || '') ? 'ADMIN' : 'CLIENT';
           useAuthStore.setState({ 
             user: { id: firebaseUser.uid, email: firebaseUser.email || '', role, name: firebaseUser.displayName || (role === 'ADMIN' ? 'Demo Admin' : 'Demo User'), walletBalance: 0, createdAt: new Date().toISOString() }, 
             isLoading: false 
@@ -84,8 +85,9 @@ if (typeof window !== 'undefined') {
         }
       } catch (err) {
         console.warn('Backend fetch failed, using fallback demo user', err);
-        // Fallback demo user if backend is completely offline
-        const role = firebaseUser.email?.toLowerCase().includes('admin') ? 'ADMIN' : 'CLIENT';
+        // Fallback demo user if backend is completely offline — exact admin email list
+        const ADMIN_EMAILS = ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'];
+        const role = ADMIN_EMAILS.includes(firebaseUser.email?.toLowerCase() || '') ? 'ADMIN' : 'CLIENT';
         useAuthStore.setState({ 
           user: { id: firebaseUser.uid, email: firebaseUser.email || '', role, name: firebaseUser.displayName || (role === 'ADMIN' ? 'Demo Admin' : 'Demo User'), walletBalance: 0, createdAt: new Date().toISOString() }, 
           isLoading: false 
