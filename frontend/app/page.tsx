@@ -11,6 +11,7 @@ import { logFootprint } from '@/lib/fingerprint';
 import type { AdAccount } from '@/types';
 import { AdminOverviewDashboard } from '@/components/admin/AdminOverviewDashboard';
 import { AccountModal } from '@/components/admin/AccountModal';
+import { HeroBanner } from '@/components/marketplace/HeroBanner';
 import dynamic from 'next/dynamic';
 
 
@@ -135,44 +136,7 @@ export default function MarketplacePage() {
         ) : (
           <>
             {/* Hero Banner */}
-            <div className="relative overflow-hidden rounded-2xl md:rounded-[24px] mb-5 md:mb-8 min-h-[180px] md:min-h-[280px] border border-border">
-              <div className="absolute inset-0 bg-gradient-to-r from-background/98 via-background/85 to-background/30" />
-              
-              <div className="relative z-10 p-5 sm:p-8 md:p-12 flex flex-col gap-3 md:gap-5 max-w-[680px]">
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--success-subtle)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 20, padding: '5px 14px', width: 'fit-content' }}
-                >
-                  <span className="live-dot" />
-                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--success)' }}>Trusted by 1000+ Marketers</span>
-                </motion.div>
-                
-                <motion.h1 
-                  initial="hidden" animate="visible" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.2 } } }}
-                  style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: 'clamp(22px, 4vw, 44px)', lineHeight: 1.15, color: 'var(--text-primary)', margin: 0 }}
-                >
-                  <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} style={{ display: 'block' }}>Institutional-Grade</motion.span>
-                  <motion.span variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="gradient-text" style={{ display: 'block' }}>Ad Account Infrastructure</motion.span>
-                </motion.h1>
-                
-                <motion.p 
-                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}
-                  style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0, maxWidth: 480 }}
-                  className="hidden sm:block"
-                >
-                  Premium verified ad accounts, business managers, and Facebook assets built for institutional-scale media buying operations.
-                </motion.p>
-                
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}
-                  style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 20px', marginTop: 4 }}
-                >
-                  <button className="btn-gradient" style={{ padding: '9px 20px', borderRadius: 12, fontWeight: 600, fontSize: 13, color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 12px rgba(var(--accent-rgb), 0.2)' }}>
-                    Get Started
-                  </button>
-                </motion.div>
-              </div>
-            </div>
+            <HeroBanner />
 
             {/* Feature Cards — stack on mobile */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 md:mb-10">

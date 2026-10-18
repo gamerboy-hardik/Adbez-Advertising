@@ -165,8 +165,10 @@ export function ProductCard({ account, compact = false }: ProductCardProps) {
               <span className="text-xs text-[var(--text-secondary)] font-medium">${account.spendingLimit.toLocaleString('en-US')} limit</span>
             </div>
           )}
-          {account.country && (
-            <span className="text-xs text-muted-foreground font-medium">{account.country}</span>
+          {(account.country || account.countryFlag) && (
+            <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+              {account.countryFlag} {account.country || ''}
+            </span>
           )}
         </div>
       )}

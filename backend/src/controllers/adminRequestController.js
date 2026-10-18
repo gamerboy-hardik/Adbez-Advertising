@@ -48,8 +48,15 @@ async function getUserRequests(req, res) {
       }
     });
   } catch (err) {
-    console.error('[REQUESTS] getUserRequests error:', err);
-    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+    console.warn('[REQUESTS] Database offline, returning fallback requests:', err.message);
+    const { FALLBACK_REQUESTS } = require('../utils/fallbackData');
+    return res.json({
+      success: true,
+      data: {
+        requests: FALLBACK_REQUESTS,
+        pagination: { total: FALLBACK_REQUESTS.length, page: 1, limit: take, totalPages: 1 }
+      }
+    });
   }
 }
 

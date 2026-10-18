@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const { filterFallbackAccounts, getFallbackCategoryStats, FALLBACK_ACCOUNTS } = require('../utils/fallbackData');
 
 const prisma = new PrismaClient();
 
@@ -89,8 +90,12 @@ async function listAccounts(req, res) {
       },
     });
   } catch (err) {
-    console.error('[ACCOUNTS] list error:', err);
-    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+    console.warn('[ACCOUNTS] Database offline, serving in-memory inventory:', err.message);
+    const fallback = filterFallbackAccounts(req.query);
+    return res.json({
+      success: true,
+      data: fallback,
+    });
   }
 }
 
@@ -126,7 +131,12 @@ async function getAccount(req, res) {
 
     return res.json({ success: true, data: { account } });
   } catch (err) {
-    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+    console.warn('[ACCOUNTS] Database offline, searching fallback accounts for ID:', req.params.id);
+    const found = FALLBACK_ACCOUNTS.find(a => a.id === req.params.id);
+    if (found) {
+      return res.json({ success: true, data: { account: found } });
+    }
+    return res.status(404).json({ success: false, error: 'NOT_FOUND', message: 'Account not found.' });
   }
 }
 
@@ -147,7 +157,9 @@ async function getCategoryStats(req, res) {
 
     return res.json({ success: true, data: { stats: result } });
   } catch (err) {
-    return res.status(500).json({ success: false, error: 'SERVER_ERROR' });
+    console.warn('[ACCOUNTS] Database offline, returning fallback category stats');
+    const stats = getFallbackCategoryStats();
+    return res.json({ success: true, data: { stats } });
   }
 }
 

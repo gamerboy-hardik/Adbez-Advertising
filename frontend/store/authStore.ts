@@ -68,7 +68,10 @@ if (typeof window !== 'undefined') {
       
       try {
         // Fetch the synced PostgreSQL DB User object from our backend
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/auth/me`, {
+        const apiBase = (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')
+          ? 'https://adbez-backend.vercel.app/api'
+          : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api');
+        const res = await fetch(`${apiBase}/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -76,7 +79,7 @@ if (typeof window !== 'undefined') {
           useAuthStore.setState({ user: data.data.user, isLoading: false });
         } else {
           // Fallback if backend returns failure — use exact admin email list (matches backend)
-          const ADMIN_EMAILS = ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'];
+          const ADMIN_EMAILS = ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com', 'trushalpalpvt@gmail.com'];
           const role = ADMIN_EMAILS.includes(firebaseUser.email?.toLowerCase() || '') ? 'ADMIN' : 'CLIENT';
           useAuthStore.setState({ 
             user: { id: firebaseUser.uid, email: firebaseUser.email || '', role, name: firebaseUser.displayName || (role === 'ADMIN' ? 'Demo Admin' : 'Demo User'), walletBalance: 0, createdAt: new Date().toISOString() }, 
@@ -86,7 +89,7 @@ if (typeof window !== 'undefined') {
       } catch (err) {
         console.warn('Backend fetch failed, using fallback demo user', err);
         // Fallback demo user if backend is completely offline — exact admin email list
-        const ADMIN_EMAILS = ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com'];
+        const ADMIN_EMAILS = ['admin.adbez@gmail.com', 'admin@adbez.com', 'admin2@adbez.com', 'root@adbez.com', 'trushalpalpvt@gmail.com'];
         const role = ADMIN_EMAILS.includes(firebaseUser.email?.toLowerCase() || '') ? 'ADMIN' : 'CLIENT';
         useAuthStore.setState({ 
           user: { id: firebaseUser.uid, email: firebaseUser.email || '', role, name: firebaseUser.displayName || (role === 'ADMIN' ? 'Demo Admin' : 'Demo User'), walletBalance: 0, createdAt: new Date().toISOString() }, 

@@ -4,7 +4,17 @@ import type {
 } from '@/types';
 import { PLACEHOLDER_ACCOUNTS } from './mockData';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+export function getApiBase(): string {
+  if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost:5000')) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return 'https://adbez-backend.vercel.app/api';
+    }
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+}
 
 // ─── OFFLINE MOCK STATE ───────────────────────────────────────────────────────
 let _mockAccounts = [...PLACEHOLDER_ACCOUNTS];
@@ -29,7 +39,7 @@ async function refreshAccessToken(): Promise<string | null> {
   const { refreshToken } = getStoredTokens();
   if (!refreshToken) return null;
 
-  const res = await fetch(`${API_BASE}/auth/refresh`, {
+  const res = await fetch(`${getApiBase()}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
@@ -68,7 +78,7 @@ async function apiFetch<T>(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
     
-    const res = await fetch(`${API_BASE}${path}`, { ...options, headers, signal: controller.signal });
+    const res = await fetch(`${getApiBase()}${path}`, { ...options, headers, signal: controller.signal });
     clearTimeout(timeoutId);
     
     const json: ApiResponse<T> = await res.json();

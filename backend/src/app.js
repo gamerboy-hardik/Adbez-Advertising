@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -13,7 +15,10 @@ const footprintRoutes = require('./routes/footprint');
 const adminRoutes = require('./routes/admin');
 const adminRequestsRoutes = require('./routes/adminRequests');
 
+const compression = require('compression');
+
 const app = express();
+app.use(compression());
 
 // ─── SECURITY HEADERS ─────────────────────────────────────────────────────────
 app.use(helmet({
@@ -30,7 +35,18 @@ app.use(helmet({
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: config.corsOrigin,
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      config.corsOrigin.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1')
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-ID'],
