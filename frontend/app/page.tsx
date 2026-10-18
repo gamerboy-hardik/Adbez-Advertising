@@ -187,20 +187,19 @@ export default function MarketplacePage() {
             </motion.div>
 
             {/* Search Bar — full width on mobile */}
-            <div className="flex gap-2 mb-5 md:mb-9">
-              <div style={{ position: 'relative', flex: 1 }}>
-                <Search size={15} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+            <div className="flex items-center gap-2.5 mb-5 md:mb-8">
+              <div className="relative flex-1">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                 <input
                   type="text"
-                  className="input-field"
+                  className="input-field pl-10 pr-4 py-2.5 text-xs sm:text-sm font-medium"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  placeholder="Search ad accounts, BMs..."
-                  style={{ paddingLeft: 40, paddingRight: 16 }}
+                  placeholder="Search ad accounts, platforms, verified BMs..."
                 />
               </div>
-              <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '12px 14px', borderRadius: 12, background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', fontWeight: 600, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                <SlidersHorizontal size={15} />
+              <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-foreground hover:border-[var(--border-hover)] text-xs sm:text-sm font-semibold transition-all active:scale-95 shadow-sm">
+                <SlidersHorizontal size={15} className="text-muted-foreground" />
                 <span className="hidden sm:inline">Filters</span>
               </button>
             </div>

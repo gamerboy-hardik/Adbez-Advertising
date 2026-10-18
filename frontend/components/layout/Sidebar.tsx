@@ -129,14 +129,14 @@ export function Sidebar({ activeCategory, onCategoryChange, counts = {}, onAddCl
                 <button
                   onClick={() => onCategoryChange(id)}
                   className={`relative w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left transition-all group z-10 ${
-                    isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    isActive ? 'text-foreground font-bold' : 'text-muted-foreground hover:text-foreground font-medium'
                   }`}
                 >
                   {/* Animated Pill Background */}
                   {isActive && (
                     <motion.div
                       layoutId="sidebarActivePill"
-                      className="absolute inset-0 bg-gradient-to-r from-[var(--accent-subtle)] to-transparent border border-l-[rgba(var(--accent-rgb),0.2)] border-y-transparent border-r-transparent rounded-xl -z-10 shadow-[inset_4px_0_10px_rgba(var(--accent-rgb),0.05)]"
+                      className="absolute inset-0 bg-gradient-to-r from-[var(--accent-subtle)] to-[rgba(var(--accent-rgb),0.02)] border-l-2 border-l-[var(--accent)] rounded-xl -z-10 shadow-[inset_4px_0_12px_rgba(var(--accent-rgb),0.08)]"
                       transition={{ type: "spring", stiffness: 350, damping: 25 }}
                     />
                   )}
@@ -150,14 +150,14 @@ export function Sidebar({ activeCategory, onCategoryChange, counts = {}, onAddCl
                   )}
                   <Icon size={16} className={`transition-colors relative z-10 ${isActive ? 'text-[var(--accent)]' : 'group-hover:text-[var(--accent)]'}`} />
                   <div className="flex-1 min-w-0 relative z-10">
-                    <p className="text-xs font-semibold m-0 truncate">{label}</p>
+                    <p className={`text-xs m-0 truncate ${isActive ? 'font-bold text-foreground' : 'font-semibold'}`}>{label}</p>
                     <p className="text-[10px] m-0 text-muted-foreground leading-tight">{sub}</p>
                   </div>
                   {count > 0 && (
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg transition-colors ${
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg transition-all ${
                       isActive
-                        ? 'bg-[rgba(var(--accent-rgb),0.12)] text-[var(--accent)]'
-                        : 'bg-card text-muted-foreground'
+                        ? 'bg-[var(--accent)] text-white shadow-sm'
+                        : 'bg-muted/60 text-muted-foreground border border-border/40'
                     }`}>
                       {count}
                     </span>

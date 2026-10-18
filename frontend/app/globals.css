@@ -10,30 +10,30 @@ html { scroll-behavior: smooth; font-size: 100%; -webkit-font-smoothing: antiali
 html, body { width: 100%; max-width: 100%; letter-spacing: 0.01em; }
 
 /* ══════════════════════════════════════════════════════
-   DESIGN TOKENS — Light Theme (Polished)
+   DESIGN TOKENS — Crisp Luxury White Theme (WCAG AAA)
    ══════════════════════════════════════════════════════ */
 :root {
   /* Surfaces */
-  --bg-primary:    #F4F6FA;
-  --bg-secondary:  #ECEEF4;
+  --bg-primary:    #F8FAFC;
+  --bg-secondary:  #F1F5F9;
   --bg-card:       #FFFFFF;
-  --bg-card-hover: #F8F9FC;
-  --bg-glass:      rgba(255, 255, 255, 0.92);
+  --bg-card-hover: #F8FAFC;
+  --bg-glass:      rgba(255, 255, 255, 0.95);
   --bg-elevated:   #FFFFFF;
   --bg-sidebar:    #FFFFFF;
 
   /* Borders */
-  --border:        rgba(0, 0, 0, 0.09);
-  --border-hover:  rgba(0, 0, 0, 0.18);
-  --border-accent: rgba(79, 70, 229, 0.35);
+  --border:        #E2E8F0;
+  --border-hover:  #CBD5E1;
+  --border-accent: rgba(79, 70, 229, 0.45);
 
-  /* Text */
-  --text-primary:   #0F172A;
-  --text-secondary: #374151;
-  --text-muted:     #64748B;
+  /* Text — Deep, high-contrast slate */
+  --text-primary:   #0F172A; /* Slate-900: sharp titles */
+  --text-secondary: #334155; /* Slate-700: clear body */
+  --text-muted:     #64748B; /* Slate-500: readable labels */
 
   /* Semantic Tailwind mapping */
-  --background:    #F4F6FA;
+  --background:    #F8FAFC;
   --foreground:    #0F172A;
   --card:          #FFFFFF;
   --card-foreground: #0F172A;
@@ -44,7 +44,7 @@ html, body { width: 100%; max-width: 100%; letter-spacing: 0.01em; }
   --accent:        #4F46E5;
   --accent-rgb:    79, 70, 229;
   --accent-hover:  #4338CA;
-  --accent-glow:   rgba(79, 70, 229, 0.15);
+  --accent-glow:   rgba(79, 70, 229, 0.18);
   --accent-subtle: rgba(79, 70, 229, 0.08);
 
   /* Semantic Colors */
@@ -54,11 +54,11 @@ html, body { width: 100%; max-width: 100%; letter-spacing: 0.01em; }
   --danger:        #DC2626;
   --info:          #2563EB;
 
-  /* Shadows — soft on light */
-  --shadow-sm:     0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:     0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-lg:     0 10px 30px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.05);
-  --shadow-glow:   0 4px 24px rgba(79, 70, 229, 0.14);
+  /* Shadows — soft, elegant */
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-md:     0 4px 14px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg:     0 12px 32px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+  --shadow-glow:   0 4px 24px rgba(79, 70, 229, 0.16);
 
   /* Radii */
   --radius-sm:     8px;
@@ -72,40 +72,69 @@ html, body { width: 100%; max-width: 100%; letter-spacing: 0.01em; }
 }
 
 /* ══════════════════════════════════════════════════════
-   DARK THEME
+   DESIGN TOKENS — Full Pure Obsidian Black Theme (OLED / WCAG AAA)
    ══════════════════════════════════════════════════════ */
 .dark {
-  --bg-primary:    #0C0D12;
-  --bg-secondary:  #111218;
-  --bg-card:       #16171F;
-  --bg-card-hover: #1C1D27;
-  --bg-glass:      rgba(22, 23, 31, 0.88);
-  --bg-elevated:   #1E1F2A;
-  --bg-sidebar:    #111218;
+  /* Surfaces — Deep rich institutional black */
+  --bg-primary:    #08090D;
+  --bg-secondary:  #0E0F16;
+  --bg-card:       #13141E;
+  --bg-card-hover: #191B28;
+  --bg-glass:      rgba(19, 20, 30, 0.94);
+  --bg-elevated:   #1C1E2D;
+  --bg-sidebar:    #0E0F16;
 
-  --border:        rgba(255, 255, 255, 0.08);
-  --border-hover:  rgba(255, 255, 255, 0.16);
-  --border-accent: rgba(99, 102, 241, 0.4);
+  /* Borders — Crisp, subtle, non-blinding */
+  --border:        rgba(255, 255, 255, 0.09);
+  --border-hover:  rgba(255, 255, 255, 0.20);
+  --border-accent: rgba(99, 102, 241, 0.50);
 
-  --text-primary:   #F0F0F3;
-  --text-secondary: #B4B5C0;
-  --text-muted:     #6E7081;
+  /* Text — Bright, high-contrast, zero eye-strain */
+  --text-primary:   #FFFFFF; /* Pure White: maximum clarity */
+  --text-secondary: #CBD5E1; /* Slate-300: crisp readability */
+  --text-muted:     #94A3B8; /* Slate-400: sharp muted */
 
-  --background:    #0C0D12;
-  --foreground:    #F0F0F3;
-  --card:          #16171F;
-  --card-foreground: #F0F0F3;
-  --muted:         #1E1F2A;
-  --muted-foreground: #6E7081;
+  --background:    #08090D;
+  --foreground:    #FFFFFF;
+  --card:          #13141E;
+  --card-foreground: #FFFFFF;
+  --muted:         #191B28;
+  --muted-foreground: #94A3B8;
 
-  --accent-subtle: rgba(99, 102, 241, 0.10);
+  --accent:        #6366F1;
+  --accent-rgb:    99, 102, 241;
+  --accent-hover:  #818CF8;
+  --accent-glow:   rgba(99, 102, 241, 0.28);
+  --accent-subtle: rgba(99, 102, 241, 0.14);
+
   --success:       #10B981;
-  --success-subtle: rgba(16, 185, 129, 0.1);
+  --success-subtle: rgba(16, 185, 129, 0.15);
 
-  --shadow-sm:     0 1px 3px rgba(0,0,0,0.35);
-  --shadow-md:     0 4px 16px rgba(0,0,0,0.40);
-  --shadow-lg:     0 12px 48px rgba(0,0,0,0.50);
-  --shadow-glow:   0 4px 24px rgba(99, 102, 241, 0.14);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md:     0 4px 20px rgba(0,0,0,0.6);
+  --shadow-lg:     0 12px 48px rgba(0,0,0,0.7);
+  --shadow-glow:   0 4px 24px rgba(99, 102, 241, 0.25);
+}
+
+/* ── Input Field Utility ─────────────────────────────── */
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.input-field::placeholder {
+  color: var(--text-muted);
 }
 
 /* Additional color constants */

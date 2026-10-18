@@ -158,7 +158,10 @@ export function Navbar() {
             </div>
           )
         ) : (
-          <div className="flex gap-2 w-[150px] h-9 bg-muted/50 rounded-xl animate-pulse" />
+          <div className="flex items-center gap-2">
+            <div className="w-16 h-8 rounded-xl bg-card border border-border/40 animate-pulse" />
+            <div className="w-20 h-8 rounded-xl bg-[var(--accent)]/30 animate-pulse" />
+          </div>
         )}
       </div>
 

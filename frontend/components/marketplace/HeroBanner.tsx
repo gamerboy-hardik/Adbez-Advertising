@@ -1,88 +1,100 @@
 'use client';
-import dynamic from 'next/dynamic';
-import { ShieldCheck, Zap, Lock, Clock, BadgeCheck, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Zap, Lock, Clock, BadgeCheck, ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
-// Dynamically import 3D canvas to avoid SSR issues
-const HeroCanvas = dynamic(() => import('@/components/three/HeroCanvas').then(m => m.HeroCanvas), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 bg-background" />
-});
-
 const trustItems = [
-  { icon: Zap,        label: 'Instant Delivery',  color: 'text-amber-400'   },
-  { icon: Lock,       label: '100% Secure',       color: 'text-emerald-400' },
-  { icon: Clock,      label: '24/7 Support',      color: 'text-blue-400'    },
-  { icon: BadgeCheck, label: 'Premium Verified',  color: 'text-violet-400'  },
+  { icon: Zap,        label: 'Instant Delivery',  color: 'text-amber-500 dark:text-amber-400'   },
+  { icon: Lock,       label: '100% Secure',       color: 'text-emerald-500 dark:text-emerald-400' },
+  { icon: Clock,      label: '24/7 Support',      color: 'text-blue-500 dark:text-blue-400'    },
+  { icon: BadgeCheck, label: 'Premium Verified',  color: 'text-violet-500 dark:text-violet-400'  },
 ];
 
 export function HeroBanner() {
   return (
-    <div className="relative overflow-hidden rounded-2xl mb-8 min-h-[240px] border border-border"
-      style={{ background: 'linear-gradient(135deg, var(--bg-card) 0%, var(--bg-primary) 100%)' }}
-    >
-      {/* Three.js 3D background */}
-      <div className="absolute inset-0 opacity-60">
-        <HeroCanvas />
-      </div>
+    <div className="relative overflow-hidden rounded-2xl mb-8 min-h-[250px] border border-border bg-gradient-to-br from-card via-card/95 to-background shadow-sm dark:shadow-[0_1px_30px_rgba(0,0,0,0.5)]">
+      
+      {/* ── Ambient Smooth Glow Orbs (60-120fps Hardware Accelerated) ── */}
+      <div className="absolute top-0 -left-20 w-80 h-80 rounded-full bg-blue-500/10 dark:bg-indigo-500/15 blur-[90px] pointer-events-none animate-pulse" style={{ animationDuration: '6s' }} />
+      <div className="absolute -bottom-20 right-10 w-96 h-96 rounded-full bg-cyan-500/10 dark:bg-cyan-500/15 blur-[100px] pointer-events-none animate-pulse" style={{ animationDuration: '8s' }} />
+      
+      {/* Subtle grid pattern for institutional aesthetic */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.06] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
+          backgroundSize: '32px 32px'
+        }}
+      />
 
-      {/* Dark gradient overlay so text is readable */}
-      <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-transparent pointer-events-none" />
-
-      <div className="relative z-10 p-8 md:p-10 flex flex-col lg:flex-row items-start lg:items-center gap-10">
+      <div className="relative z-10 p-6 sm:p-8 md:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+        
         {/* Left: Content */}
-        <div className="flex-1">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-3 py-1 mb-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-400">Trusted by 1000+ Marketers</span>
+        <div className="flex-1 max-w-2xl">
+          {/* Trust Badge */}
+          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-3 py-1 mb-4">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
+            <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-700 dark:text-emerald-400">
+              Trusted by 1,000+ Media Buyers
+            </span>
           </div>
 
-          {/* Headline */}
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight mb-3">
-            Premium Agency<br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+          {/* Headline — 100% High Contrast in both Pure Black & Crisp White */}
+          <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black tracking-tight leading-[1.15] mb-3 text-slate-900 dark:text-white">
+            Premium Agency{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-indigo-300 dark:to-cyan-300">
               Ad Accounts
-            </span>{' '}& Assets
+            </span>{' '}
+            & Assets
           </h1>
 
-          <p className="text-sm text-slate-400 max-w-md leading-relaxed mb-7">
-            Institutional-grade accounts, business managers, and verified assets designed to scale your ad operations safely and reliably.
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed mb-6 font-normal">
+            Institutional-grade advertising accounts, business managers, and verified assets designed to scale your operations safely, with zero spend cap limits.
           </p>
 
-          {/* Trust row */}
-          <div className="flex flex-wrap gap-x-6 gap-y-3">
+          {/* Trust Row */}
+          <div className="flex flex-wrap gap-x-6 gap-y-2.5 pt-1">
             {trustItems.map(({ icon: Icon, label, color }) => (
               <div key={label} className="flex items-center gap-2">
-                <Icon size={14} className={color} />
-                <span className="text-xs text-slate-500 dark:text-slate-300 font-medium">{label}</span>
+                <Icon size={15} className={color} />
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right: CTA card */}
-        <div className="flex-shrink-0 w-full lg:w-auto lg:min-w-[200px]">
-          <div className="rounded-xl border border-border p-5 flex flex-col gap-4"
-            style={{ background: 'rgba(255,255,255,0.04)', backdropFilter: 'blur(20px)' }}
-          >
+        {/* Right: Quick Action Card */}
+        <div className="flex-shrink-0 w-full lg:w-72">
+          <div className="rounded-2xl border border-border bg-card/80 dark:bg-card/90 backdrop-blur-xl p-5 flex flex-col gap-3.5 shadow-md">
             <div className="flex items-center gap-2">
-              <ShieldCheck size={18} className="text-blue-400" />
-              <span className="text-sm font-bold text-white">Get Started</span>
+              <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] border border-[rgba(var(--accent-rgb),0.2)] flex items-center justify-center text-[var(--accent)]">
+                <Sparkles size={16} />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-foreground block leading-tight">Instant Provisioning</span>
+                <span className="text-[10px] text-muted-foreground block">Verified & KYC cleared</span>
+              </div>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">Browse 100+ verified accounts across all major ad platforms.</p>
-            <Link href="/login?mode=signup"
-              className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl transition-all active:scale-95 shadow-[0_0_15px_rgba(59,130,246,0.35)]"
+
+            <p className="text-xs text-muted-foreground leading-relaxed m-0">
+              Browse institutional ad accounts across Meta, Google Ads MCC, TikTok, and Bing.
+            </p>
+
+            <Link 
+              href="/login?mode=signup"
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--accent)] to-indigo-600 hover:from-[var(--accent-hover)] hover:to-indigo-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-glow active:scale-95 no-underline"
             >
-              Create Account <ArrowRight size={13} />
+              Create Free Account <ArrowRight size={13} />
             </Link>
-            <Link href="/login"
-              className="flex items-center justify-center gap-2 bg-muted/50 hover:bg-muted/50 border border-border text-white text-xs font-semibold py-2.5 px-5 rounded-xl transition-all"
+
+            <Link 
+              href="/login"
+              className="flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/80 border border-border text-foreground text-xs font-semibold py-2 px-4 rounded-xl transition-all no-underline"
             >
-              Login to Dashboard
+              Sign In to Dashboard
             </Link>
           </div>
         </div>
+
       </div>
     </div>
   );

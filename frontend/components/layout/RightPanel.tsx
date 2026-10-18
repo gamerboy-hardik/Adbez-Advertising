@@ -109,15 +109,15 @@ export function RightPanel() {
       )}
 
       {/* Quick Info */}
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {[
           { label: 'Instant Delivery', val: '< 5 min' },
           { label: 'Satisfaction Rate', val: '99.2%' },
           { label: 'Secure Escrow', val: 'AES-256' },
         ].map(({ label, val }) => (
-          <div key={label} className="flex items-center justify-between px-3 py-2.5 bg-card border border-border rounded-lg hover:border-[var(--border-hover)] transition-all">
-            <span className="text-[11px] text-muted-foreground">{label}</span>
-            <span className="text-[11px] font-bold text-foreground">{val}</span>
+          <div key={label} className="flex items-center justify-between px-3.5 py-2.5 bg-card border border-border rounded-xl hover:border-[var(--border-hover)] transition-all">
+            <span className="text-[11px] font-semibold text-muted-foreground">{label}</span>
+            <span className="text-[11px] font-bold text-foreground font-mono bg-secondary/80 px-2.5 py-0.5 rounded-lg border border-border/60">{val}</span>
           </div>
         ))}
       </div>
