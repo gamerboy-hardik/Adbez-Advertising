@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Shield, CreditCard, RefreshCw, Layers, PlusCircle, ArrowRightLeft, 
   DollarSign, CheckCircle2, AlertCircle, Key, Globe, Eye, ChevronRight,
-  HelpCircle, Sparkles, Send, History, Building2
+  HelpCircle, Sparkles, Send, History, Building2, Loader2
 } from 'lucide-react';
 import { useAgencyStore, AgencyAccount } from '@/store/useAgencyStore';
 import { useAuthStore } from '@/store/authStore';
@@ -50,18 +50,23 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
   const [applyDeposit, setApplyDeposit] = useState('100');
   const [applyLicense, setApplyLicense] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [applyStageText, setApplyStageText] = useState('Submit Application');
 
   const [bmAccountId, setBMAccountId] = useState('');
   const [bmTargetId, setBMTargetId] = useState('');
+  const [isSubmittingBM, setIsSubmittingBM] = useState(false);
 
   const [depositAmount, setDepositAmount] = useState('100');
+  const [isRecharging, setIsRecharging] = useState(false);
   
   const [transferFrom, setTransferFrom] = useState('');
   const [transferTo, setTransferTo] = useState('');
   const [transferAmount, setTransferAmount] = useState('');
+  const [isTransferring, setIsTransferring] = useState(false);
 
   const [refundAccId, setRefundAccId] = useState('');
   const [refundAmount, setRefundAmount] = useState('');
+  const [isRefunding, setIsRefunding] = useState(false);
 
   // Filtered store data
   const platformAccountsRaw = accounts.filter(a => a.platform === platform);
@@ -96,38 +101,63 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
   // Handlers
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return; // Strict anti-spam
     if (!applyLicense.trim()) {
       error('Please enter a target License or Corporate Name.');
       return;
     }
-    setIsSubmitting(true);
     const cost = parseFloat(applyCost) || 30;
     const deposit = parseFloat(applyDeposit) || 0;
-    const res = await applyForAccount(platform, parseFloat(applyBudget) || 5000, cost, deposit, applyLicense);
+    const requiredAmount = cost + deposit * 1.05;
+
+    if (currentWalletBalance < requiredAmount) {
+      error(`Insufficient AdBez Wallet coins/USD ($${currentWalletBalance.toFixed(2)}). You need at least $${requiredAmount.toFixed(2)} to initiate setup.`);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setApplyStageText('Allocating Escrow Vault Balance...');
+    await new Promise(r => setTimeout(r, 650));
+
+    setApplyStageText(`Transmitting Corporate Profile to ${platform} Node...`);
+    const applyPromise = applyForAccount(platform, parseFloat(applyBudget) || 5000, cost, deposit, applyLicense);
+    await new Promise(r => setTimeout(r, 750));
+
+    const [res] = await Promise.all([
+      applyPromise,
+      new Promise(r => setTimeout(r, 500))
+    ]);
+
     setIsSubmitting(false);
+    setApplyStageText('Submit Application');
+
     if (res) {
-      success(`Application for ${platform} account submitted successfully ($${(cost + deposit * 1.05).toFixed(2)} debited).`);
+      success(`Application for ${platform} account submitted successfully ($${requiredAmount.toFixed(2)} debited).`);
       setApplyLicense('');
       setActiveTab('applied-records');
     } else {
-      const requiredAmount = cost + deposit * 1.05;
       error(`Insufficient AdBez Wallet coins/USD ($${currentWalletBalance.toFixed(2)}). You need at least $${requiredAmount.toFixed(2)} to initiate setup.`);
     }
   };
 
-  const handleBMShare = (e: React.FormEvent) => {
+  const handleBMShare = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingBM) return; // Strict anti-spam
     if (!bmAccountId || !bmTargetId.trim()) {
       error('Please select an ad account and enter your target BM ID.');
       return;
     }
+    setIsSubmittingBM(true);
+    await new Promise(r => setTimeout(r, 850));
     submitBMShare(platform, bmAccountId, bmTargetId);
+    setIsSubmittingBM(false);
     success('BM Share authorization request dispatched to institutional matrix.');
     setBMTargetId('');
   };
 
-  const handleDepositSubmit = (e: React.FormEvent) => {
+  const handleDepositSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isRecharging) return; // Strict anti-spam
     const targetId = selectedAccForDeposit || platformAccounts[0]?.id;
     if (!targetId) {
       error('No active advertising account selected for top-up.');
@@ -138,7 +168,10 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
       error('Please enter a valid recharge amount.');
       return;
     }
+    setIsRecharging(true);
+    await new Promise(r => setTimeout(r, 900));
     const res = rechargeAccount(targetId, amt);
+    setIsRecharging(false);
     if (res.success) {
       success(res.message);
       setActiveTab('deposit-report');
@@ -147,13 +180,17 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
     }
   };
 
-  const handleTransferSubmit = (e: React.FormEvent) => {
+  const handleTransferSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isTransferring) return; // Strict anti-spam
     if (!transferFrom || !transferTo || !transferAmount) {
       error('Please select both accounts and input transfer budget.');
       return;
     }
+    setIsTransferring(true);
+    await new Promise(r => setTimeout(r, 900));
     const res = transferBalance(transferFrom, transferTo, parseFloat(transferAmount));
+    setIsTransferring(false);
     if (res.success) {
       success(res.message);
       setTransferAmount('');
@@ -162,13 +199,17 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
     }
   };
 
-  const handleRefundSubmit = (e: React.FormEvent) => {
+  const handleRefundSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isRefunding) return; // Strict anti-spam
     if (!refundAccId || !refundAmount) {
       error('Please select account and refund amount.');
       return;
     }
+    setIsRefunding(true);
+    await new Promise(r => setTimeout(r, 900));
     const res = requestRefund(refundAccId, parseFloat(refundAmount));
+    setIsRefunding(false);
     if (res.success) {
       success(res.message);
       setRefundAmount('');
@@ -518,8 +559,21 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                     {formatCurrency(currentWalletBalance)}
                   </b>
                 </div>
-                <button type="submit" disabled={isSubmitting || currentWalletBalance < (parseFloat(applyCost || '0') + parseFloat(applyDeposit || '0') * 1.05)} className="btn-primary px-8 py-3.5 text-sm font-bold shadow-sm hover:shadow-md transition-shadow shadow-primary/20 disabled:opacity-40 flex items-center gap-2">
-                  <Send size={16} /> Submit Application
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting || currentWalletBalance < (parseFloat(applyCost || '0') + parseFloat(applyDeposit || '0') * 1.05)} 
+                  className="btn-primary px-8 py-3.5 text-sm font-bold shadow-sm hover:shadow-md transition-shadow shadow-primary/20 disabled:opacity-40 flex items-center gap-2 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>{applyStageText}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} /> Submit Application
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -606,15 +660,27 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                   <input
                     type="text"
                     placeholder="e.g. 798152282787766"
+                    disabled={isSubmittingBM}
                     value={bmTargetId}
                     onChange={(e) => setBMTargetId(e.target.value)}
-                    className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary font-mono"
+                    className="w-full bg-muted/50 border border-border/50 rounded-xl px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary font-mono disabled:opacity-50"
                   />
                 </div>
               </div>
               <div className="flex justify-end pt-2">
-                <button type="submit" className="btn-primary px-6 py-2.5 text-xs font-bold">
-                  Submit BM Share Request
+                <button 
+                  type="submit" 
+                  disabled={isSubmittingBM}
+                  className="btn-primary px-6 py-2.5 text-xs font-bold flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSubmittingBM ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Authorizing BM Node...</span>
+                    </>
+                  ) : (
+                    <span>Submit BM Share Request</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -730,10 +796,19 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                 </div>
                 <button 
                   type="submit" 
-                  disabled={currentWalletBalance < (parseFloat(depositAmount || '0') * 1.03)}
-                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-emerald-500/20 hover:opacity-95 transition-all disabled:opacity-40 flex items-center gap-2"
+                  disabled={isRecharging || currentWalletBalance < (parseFloat(depositAmount || '0') * 1.03)}
+                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-emerald-500/20 hover:opacity-95 transition-all disabled:opacity-40 flex items-center gap-2 disabled:cursor-not-allowed"
                 >
-                  <DollarSign size={18} /> Confirm Instant Recharge
+                  {isRecharging ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      <span>Routing Liquidity to Ad Account...</span>
+                    </>
+                  ) : (
+                    <>
+                      <DollarSign size={18} /> Confirm Instant Recharge
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -843,8 +918,21 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                 />
               </div>
 
-              <button type="submit" className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-violet-600/20 hover:opacity-95 transition-all flex items-center justify-center gap-2">
-                <ArrowRightLeft size={18} /> Execute Instant Transfer
+              <button 
+                type="submit" 
+                disabled={isTransferring}
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-violet-600/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isTransferring ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    <span>Transferring Ledger Balance...</span>
+                  </>
+                ) : (
+                  <>
+                    <ArrowRightLeft size={18} /> Execute Instant Transfer
+                  </>
+                )}
               </button>
             </form>
           </motion.div>
@@ -887,8 +975,21 @@ export function PlatformHub({ platform, title, subtitle, badgeColor = 'text-prim
                 />
               </div>
 
-              <button type="submit" className="w-full py-4 rounded-2xl btn-primary text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-primary/20 hover:opacity-95 transition-all flex items-center justify-center gap-2">
-                <RefreshCw size={18} /> Submit Liquid Refund to Wallet
+              <button 
+                type="submit" 
+                disabled={isRefunding}
+                className="w-full py-4 rounded-2xl btn-primary text-white font-['Space_Grotesk'] font-bold text-sm shadow-sm hover:shadow-md transition-shadow shadow-primary/20 hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isRefunding ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    <span>Calculating & Liquidating Credit...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw size={18} /> Submit Liquid Refund to Wallet
+                  </>
+                )}
               </button>
             </form>
           </motion.div>

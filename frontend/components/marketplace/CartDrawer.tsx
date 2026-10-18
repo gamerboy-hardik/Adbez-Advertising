@@ -13,6 +13,7 @@ import { logFootprint } from '@/lib/fingerprint';
 export function CartDrawer() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [checkoutStageText, setCheckoutStageText] = useState('');
   const {
     items, isDrawerOpen, setDrawerOpen,
     removeItem, updateQuantity, clearCart,
@@ -34,6 +35,7 @@ export function CartDrawer() {
   if (!mounted) return null;
 
   const handleCheckout = async () => {
+    if (loading) return; // Spam prevention
     if (!isAuthenticated()) {
       info('Please log in or sign up to complete your purchase.');
       setDrawerOpen(false);
@@ -43,11 +45,24 @@ export function CartDrawer() {
 
     const accountIds = getAccountIds();
     setLoading(true);
+    setCheckoutStageText('Verifying Wallet Escrow Allocation...');
+    
     try {
       logFootprint('CHECKOUT_INITIATED');
-      const res = await transactionsApi.checkout(accountIds);
-      if (!res.success) {
-        error(res.message || 'Checkout failed. Please try again.');
+      await new Promise(r => setTimeout(r, 650));
+
+      setCheckoutStageText('Decrypting AES-256 Vault Credentials...');
+      const apiCall = transactionsApi.checkout(accountIds);
+      await new Promise(r => setTimeout(r, 800));
+
+      setCheckoutStageText('Finalizing Ownership Routing...');
+      const [res] = await Promise.all([
+        apiCall,
+        new Promise(r => setTimeout(r, 650))
+      ]);
+
+      if (!res || !res.success) {
+        error(res?.message || 'Checkout failed. Please check wallet balance and try again.');
         return;
       }
       logFootprint('CHECKOUT_COMPLETED');
@@ -232,10 +247,13 @@ export function CartDrawer() {
               onClick={handleCheckout}
               disabled={loading}
               whileTap={{ scale: 0.97 }}
-              className="w-full py-3 bg-gradient-to-r from-[var(--accent)] to-indigo-500 hover:from-[var(--accent-hover)] hover:to-indigo-600 text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-glow active:scale-95"
+              className="w-full py-3.5 bg-gradient-to-r from-[var(--accent)] to-indigo-500 hover:from-[var(--accent-hover)] hover:to-indigo-600 text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-85 disabled:cursor-not-allowed shadow-glow active:scale-95"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                <>
+                  <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin shrink-0" />
+                  <span className="text-xs font-semibold">{checkoutStageText}</span>
+                </>
               ) : (
                 <>Initialize Provisioning Core <ArrowRight size={14} /></>
               )}

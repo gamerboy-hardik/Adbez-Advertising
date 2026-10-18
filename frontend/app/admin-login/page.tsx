@@ -29,6 +29,7 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return; // Strict anti-spam
     setLoading(true);
     setError('');
 
@@ -80,10 +81,11 @@ export default function AdminLoginPage() {
               <input
                 type="email"
                 required
+                disabled={loading}
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="Admin Node Email"
-                className="w-full bg-muted/50 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-rose-500/40 transition-all"
+                className="w-full bg-muted/50 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-rose-500/40 transition-all disabled:opacity-50"
               />
             </div>
           </div>
@@ -94,10 +96,11 @@ export default function AdminLoginPage() {
               <input
                 type="password"
                 required
+                disabled={loading}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Passphrase"
-                className="w-full bg-muted/50 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-rose-500/40 transition-all"
+                className="w-full bg-muted/50 border border-border rounded-lg py-2.5 pl-10 pr-4 text-xs font-mono text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-rose-500/40 transition-all disabled:opacity-50"
               />
             </div>
           </div>
@@ -105,9 +108,14 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 mt-4 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
+            className="w-full py-2.5 mt-4 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95 disabled:cursor-not-allowed"
           >
-            {loading ? <Loader2 size={14} className="animate-spin" /> : (
+            {loading ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                <span>Authenticating Admin Node...</span>
+              </>
+            ) : (
               <>
                 Initiate Sequence
                 <ArrowRight size={14} />

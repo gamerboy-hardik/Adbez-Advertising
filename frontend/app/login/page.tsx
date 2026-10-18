@@ -305,9 +305,19 @@ function LoginForm() {
           disabled={loading || success}
           whileHover={{ scale: 1.02, boxShadow: '0 8px 30px rgba(var(--accent-rgb), 0.4)' }}
           whileTap={{ scale: 0.97 }}
-          className="w-full mt-2 py-3.5 bg-gradient-to-r from-[var(--accent)] to-indigo-500 hover:from-[var(--accent-hover)] hover:to-indigo-600 disabled:opacity-60 text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-glow"
+          className="w-full mt-2 py-3.5 bg-gradient-to-r from-[var(--accent)] to-indigo-500 hover:from-[var(--accent-hover)] hover:to-indigo-600 disabled:opacity-60 text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-glow disabled:cursor-not-allowed"
         >
-          {loading ? <Loader2 size={16} className="animate-spin" /> : success ? <CheckCircle2 size={16} /> : (
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              <span>{mode === 'login' ? 'Authenticating Session...' : 'Creating Encrypted Vault...'}</span>
+            </>
+          ) : success ? (
+            <>
+              <CheckCircle2 size={16} />
+              <span>Authenticated!</span>
+            </>
+          ) : (
             <>{mode === 'login' ? 'Sign In' : 'Create Account'} <ArrowRight size={15} /></>
           )}
         </motion.button>

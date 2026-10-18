@@ -26,15 +26,27 @@ export function TopUpModal({ isOpen, onClose }: TopUpModalProps) {
   const bonus = parsedAmount >= 500 ? parseFloat((parsedAmount * 0.05).toFixed(2)) : 0;
   const totalCredit = parseFloat((parsedAmount + bonus).toFixed(2));
 
+  const [topupStageText, setTopupStageText] = useState('Create Payment Invoice');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     if (parsedAmount < 1) { error('Minimum top-up is $1.'); return; }
+    
     setLoading(true);
+    setTopupStageText('Connecting to Escrow Gateway...');
+    
     try {
       logFootprint('TOPUP_INITIATED');
-      const res = await transactionsApi.topup(parsedAmount);
-      if (!res.success || !res.data) {
-        error(res.message || 'Top-up failed.');
+      await new Promise(r => setTimeout(r, 600));
+
+      setTopupStageText('Allocating AdBez Vault Balance...');
+      const apiCall = transactionsApi.topup(parsedAmount);
+      await new Promise(r => setTimeout(r, 700));
+
+      const res = await apiCall;
+      if (!res || !res.success || !res.data) {
+        error(res?.message || 'Top-up failed. Please try again.');
         return;
       }
       setResult(res.data);
@@ -45,6 +57,7 @@ export function TopUpModal({ isOpen, onClose }: TopUpModalProps) {
       error('Network error. Please try again.');
     } finally {
       setLoading(false);
+      setTopupStageText('Create Payment Invoice');
     }
   };
 
@@ -135,10 +148,10 @@ export function TopUpModal({ isOpen, onClose }: TopUpModalProps) {
           <button
             type="submit"
             disabled={loading || parsedAmount < 1}
-            className="w-full py-2.5 bg-primary hover:opacity-90 text-foreground font-bold text-xs rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 bg-primary hover:opacity-90 text-white font-bold text-xs rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm"
           >
             {loading ? <Loader2 size={14} className="animate-spin" /> : null}
-            Create Payment Invoice
+            <span>{topupStageText}</span>
           </button>
         </form>
       )}

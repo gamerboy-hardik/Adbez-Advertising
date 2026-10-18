@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { ShieldCheck, Check, X, Clock, FileText } from 'lucide-react';
+import { ShieldCheck, Check, X, Clock, FileText, Loader2 } from 'lucide-react';
 import { adminApi } from '@/lib/api';
 import { useToastStore } from '@/store/toastStore';
 import { formatCurrency } from '@/lib/utils';
@@ -9,6 +9,7 @@ import { Preloader } from '@/components/ui/Preloader';
 export default function AdminRequestsPage() {
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
   const { success, error } = useToastStore();
   const [activeTab, setActiveTab] = useState<'PENDING' | 'LOGS'>('PENDING');
 
@@ -26,12 +27,18 @@ export default function AdminRequestsPage() {
   };
 
   const handleAction = async (id: string, status: 'APPROVED' | 'DENIED') => {
-    const res = await adminApi.actionRequest(id, status);
-    if (res.success) {
-      success(`Request ${status.toLowerCase()} successfully`);
-      fetchRequests(); // refresh
-    } else {
-      error(`Failed to ${status.toLowerCase()} request`);
+    if (actionLoadingId) return; // Strict anti-spam
+    setActionLoadingId(id);
+    try {
+      const res = await adminApi.actionRequest(id, status);
+      if (res.success) {
+        success(`Request ${status.toLowerCase()} successfully`);
+        await fetchRequests(); // refresh
+      } else {
+        error(`Failed to ${status.toLowerCase()} request`);
+      }
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
@@ -112,15 +119,17 @@ export default function AdminRequestsPage() {
                     {req.status === 'PENDING' ? (
                       <div className="flex justify-end gap-2">
                         <button
+                          disabled={actionLoadingId === req.id}
                           onClick={() => handleAction(req.id, 'APPROVED')}
-                          className="p-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded transition-colors"
+                          className="p-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[28px] min-h-[28px]"
                           title="Approve"
                         >
-                          <Check size={16} />
+                          {actionLoadingId === req.id ? <Loader2 size={14} className="animate-spin" /> : <Check size={16} />}
                         </button>
                         <button
+                          disabled={actionLoadingId === req.id}
                           onClick={() => handleAction(req.id, 'DENIED')}
-                          className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded transition-colors"
+                          className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[28px] min-h-[28px]"
                           title="Deny"
                         >
                           <X size={16} />

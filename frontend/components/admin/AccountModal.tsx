@@ -42,6 +42,7 @@ export function AccountModal({ isOpen, onClose, onSuccess, defaultCategory = 'ad
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return; // Strict anti-spam
     setLoading(true);
     try {
       let parsedCreds = undefined;
@@ -159,9 +160,9 @@ export function AccountModal({ isOpen, onClose, onSuccess, defaultCategory = 'ad
           <label htmlFor="featured" className="text-xs font-bold uppercase tracking-wider text-primary cursor-pointer">Mark as Premium/Featured</label>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full py-3.5 bg-gradient-to-r from-[var(--accent)] to-cyan-600 hover:from-[var(--accent-hover)] hover:to-cyan-500 text-primary-foreground font-bold text-sm rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-glow">
+        <button type="submit" disabled={loading} className="w-full py-3.5 bg-gradient-to-r from-[var(--accent)] to-cyan-600 hover:from-[var(--accent-hover)] hover:to-cyan-500 text-primary-foreground font-bold text-sm rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-glow disabled:cursor-not-allowed">
           {loading && <div className="w-4 h-4 border-2 border-border/50 border-t-white rounded-full animate-spin" />}
-          {editData ? 'Update & Encrypt Asset' : 'Create & Encrypt Asset'}
+          {loading ? 'Encrypting & Saving Asset...' : (editData ? 'Update & Encrypt Asset' : 'Create & Encrypt Asset')}
         </button>
       </form>
     </Modal>
